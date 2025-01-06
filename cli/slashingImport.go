@@ -92,9 +92,16 @@ sedge slashing-import --from slashing-data.json --start-validator lighthouse`,
 			return sedgeActions.ValidateDockerComposeFile(filepath.Join(generationPath, configs.DefaultDockerComposeScriptName))
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
+			services := []string{validator}
+			// If the validator client is nimbus, we need to import the consensus service as well
+			// The consensus service is not imported by default because it's not necessary for the other clients
+			// On Nimbus, the consensus service is necessary to import the slashing protection data
+			if validatorClient == "nimbus" {
+				services = append(services, consensus)
+			}
 			err := sedgeActions.SetupContainers(actions.SetupContainersOptions{
 				GenerationPath: generationPath,
-				Services:       []string{validator},
+				Services:       services,
 			})
 			if err != nil {
 				return err

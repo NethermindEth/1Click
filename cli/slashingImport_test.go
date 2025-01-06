@@ -183,6 +183,18 @@ func TestSlashingImport_Params(t *testing.T) {
 			},
 			from: true,
 		},
+		{
+			name: "nimbus",
+			args: []string{"nimbus"},
+			actionOptions: actions.SlashingImportOptions{
+				ValidatorClient: "nimbus",
+				Network:         "mainnet",
+				StopValidator:   false,
+				StartValidator:  false,
+				GenerationPath:  configs.DefaultAbsSedgeDataPath,
+			},
+			from: true,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -209,6 +221,12 @@ func TestSlashingImport_Params(t *testing.T) {
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
 
+			services := []string{"validator"}
+
+			if tt.actionOptions.ValidatorClient == "nimbus" {
+				services = append(services, "consensus")
+			}
+
 			mockActions := sedge_mocks.NewMockSedgeActions(ctrl)
 			depsMgr := sedge_mocks.NewMockDependenciesManager(ctrl)
 			gomock.InOrder(
@@ -218,7 +236,7 @@ func TestSlashingImport_Params(t *testing.T) {
 				mockActions.EXPECT().ValidateDockerComposeFile(filepath.Join(tt.actionOptions.GenerationPath, "docker-compose.yml")).Return(nil).Times(1),
 				mockActions.EXPECT().SetupContainers(actions.SetupContainersOptions{
 					GenerationPath: tt.actionOptions.GenerationPath,
-					Services:       []string{"validator"},
+					Services:       services,
 				}).Return(nil).Times(1),
 				mockActions.EXPECT().ImportSlashingInterchangeData(tt.actionOptions).Times(1),
 			)
@@ -253,6 +271,11 @@ func TestSlashingImport_Errors(t *testing.T) {
 			args: []string{"lighthouse"},
 			run:  true,
 			err:  errors.New("action error"),
+		},
+		{
+			name: "nimbus invalid network",
+			args: []string{"nimbus", "--network", "invalid_network"},
+			err:  errors.New("invalid network: invalid_network"),
 		},
 	}
 	for _, tt := range tests {

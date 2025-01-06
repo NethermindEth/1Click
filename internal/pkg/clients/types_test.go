@@ -53,7 +53,7 @@ func TestSetImageOrDefault_Execution(t *testing.T) {
 				Name: "erigon",
 				Type: "execution",
 			},
-			expectedImage: *regexp.MustCompile(`^thorax/erigon:v\d+\.\d+\.\d+$`),
+			expectedImage: *regexp.MustCompile(`^erigontech/erigon:v\d+\.\d+\.\d+$`),
 		},
 	}
 	for _, test := range tests {
@@ -148,6 +148,28 @@ func TestSetImageOrDefault_Validator(t *testing.T) {
 	}
 }
 
+func TestSetImageOrDefault_DistributedValidator(t *testing.T) {
+	tests := []struct {
+		client        Client
+		expectedImage regexp.Regexp
+	}{
+		{
+			client: Client{
+				Name: "charon",
+				Type: "distributedValidator",
+			},
+			expectedImage: *regexp.MustCompile(`^ghcr.io/obolnetwork/charon:v\d+\.\d+\.\d+$`),
+		},
+	}
+	for _, test := range tests {
+		t.Run(test.client.Name, func(t *testing.T) {
+			test.client.SetImageOrDefault("")
+			t.Logf("print %s", test.client.Image)
+			assert.True(t, test.expectedImage.Match([]byte(test.client.Image)))
+		})
+	}
+}
+
 func TestSetImageOrDefault_CustomImage(t *testing.T) {
 	tests := []struct {
 		client      Client
@@ -173,6 +195,13 @@ func TestSetImageOrDefault_CustomImage(t *testing.T) {
 				Type: "validator",
 			},
 			customImage: "my/prysm-image:v1.0.0",
+		},
+		{
+			client: Client{
+				Name: "charon",
+				Type: "distributedValidator",
+			},
+			customImage: "my/charon-image:v1.0.0",
 		},
 	}
 	for _, test := range tests {

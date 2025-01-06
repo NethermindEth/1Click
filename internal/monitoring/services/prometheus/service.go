@@ -18,6 +18,8 @@ package prometheus
 import (
 	"embed"
 	"fmt"
+	"io"
+	"io/fs"
 	"net"
 	"net/http"
 	"path/filepath"
@@ -37,15 +39,34 @@ import (
 //go:embed config
 var config embed.FS
 
+//go:embed rules
+var rules embed.FS
+
+//go:embed alertmanager
+var alertmanager embed.FS
+
 // Config represents the Prometheus configuration.
 type Config struct {
 	Global        GlobalConfig   `yaml:"global"`
+	RuleFiles     []string       `yaml:"rule_files"`
+	Alerting      AlertingConfig `yaml:"alerting"`
 	ScrapeConfigs []ScrapeConfig `yaml:"scrape_configs"`
+}
+
+// AlertingConfig represents the alerting configuration for Prometheus.
+type AlertingConfig struct {
+	Alertmanagers []AlertmanagerConfig `yaml:"alertmanagers"`
+}
+
+// AlertmanagerConfig represents the configuration for an Alertmanager.
+type AlertmanagerConfig struct {
+	StaticConfigs []StaticConfig `yaml:"static_configs"`
 }
 
 // GlobalConfig represents the global configuration for Prometheus.
 type GlobalConfig struct {
-	ScrapeInterval string `yaml:"scrape_interval"`
+	ScrapeInterval     string `yaml:"scrape_interval"`
+	EvaluationInterval string `yaml:"evaluation_interval"`
 }
 
 // ScrapeConfig represents the configuration for a Prometheus scrape job.
@@ -262,6 +283,16 @@ func (p *PrometheusService) Setup(options map[string]string) error {
 		return err
 	}
 
+	// Copy rules
+	if err = p.copyRules(filepath.Join("prometheus")); err != nil {
+		return err
+	}
+
+	// Copy alertmanager config
+	if err = p.copyAlertManagerConfig(filepath.Join("prometheus")); err != nil {
+		return err
+	}
+
 	return nil
 }
 
@@ -306,4 +337,69 @@ func (p *PrometheusService) reloadConfig() error {
 
 func (p *PrometheusService) Name() string {
 	return monitoring.PrometheusServiceName
+}
+
+// copyRules copy rules to $DATA_DIR/rules
+func (p *PrometheusService) copyRules(dst string) (err error) {
+	return fs.WalkDir(rules, "rules", func(path string, d fs.DirEntry, err error) error {
+		if err != nil {
+			return err
+		}
+		if !d.IsDir() {
+			rule, err := rules.Open(path)
+			if err != nil {
+				return err
+			}
+			defer func() {
+				cerr := rule.Close()
+				if err == nil {
+					err = cerr
+				}
+			}()
+			data, err := io.ReadAll(rule)
+			if err != nil {
+				return err
+			}
+			if err = p.stack.WriteFile(filepath.Join(dst, path), data); err != nil {
+				return err
+			}
+		} else {
+			if err = p.stack.CreateDir(filepath.Join(dst, path)); err != nil {
+				return err
+			}
+		}
+		return nil
+	})
+}
+
+func (p *PrometheusService) copyAlertManagerConfig(dst string) (err error) {
+	return fs.WalkDir(alertmanager, "alertmanager", func(path string, d fs.DirEntry, err error) error {
+		if err != nil {
+			return err
+		}
+		if !d.IsDir() {
+			alertmanagerConfig, err := alertmanager.Open(path)
+			if err != nil {
+				return err
+			}
+			defer func() {
+				cerr := alertmanagerConfig.Close()
+				if err == nil {
+					err = cerr
+				}
+			}()
+			data, err := io.ReadAll(alertmanagerConfig)
+			if err != nil {
+				return err
+			}
+			if err = p.stack.WriteFile(filepath.Join(dst, path), data); err != nil {
+				return err
+			}
+		} else {
+			if err = p.stack.CreateDir(filepath.Join(dst, path)); err != nil {
+				return err
+			}
+		}
+		return nil
+	})
 }

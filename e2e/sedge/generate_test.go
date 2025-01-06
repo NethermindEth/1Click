@@ -16,9 +16,12 @@ limitations under the License.
 package e2e
 
 import (
+	"fmt"
 	"path/filepath"
 	"strings"
 	"testing"
+
+	"github.com/NethermindEth/sedge/internal/utils"
 
 	"github.com/NethermindEth/sedge/internal/lido/contracts"
 	"github.com/NethermindEth/sedge/internal/lido/contracts/mevboostrelaylist"
@@ -175,6 +178,55 @@ func TestE2E_Generate_FullNode_Lido_Mainnet(t *testing.T) {
 			relayURLsList := strings.Split(relayURLs, ",")
 			expectedRelayURLs, _ := mevboostrelaylist.RelaysURI("mainnet")
 			assert.Equal(t, expectedRelayURLs, relayURLsList, "RELAY_URLS value should match expected value")
+		},
+	)
+	// Run test case
+	e2eTest.run()
+}
+
+func TestE2E_Generate_FullNode_Nimbus_Mainnet(t *testing.T) {
+	// Test context
+	var (
+		runErr error
+	)
+	// Build test case
+	e2eTest := newE2ESedgeTestCase(
+		t,
+		// Arrange
+		nil,
+		// Act
+		func(t *testing.T, binaryPath string, dataDirPath string) {
+			runErr = base.RunSedge(t, binaryPath, "generate", "full-node", "--network", "mainnet", "-v", "nimbus")
+		},
+		// Assert
+		func(t *testing.T, dataDirPath string) {
+			assert.NoError(t, runErr, "generate command should succeed")
+			generateDataFilePath := filepath.Join(dataDirPath, ".env")
+			assert.FileExists(t, generateDataFilePath, ".env file should be created")
+
+			// Read .env file
+			envMap, err := godotenv.Read(generateDataFilePath)
+			assert.NoError(t, err, "should be able to read .env file")
+
+			// Read CC_IMAGE_VERSION value
+			ccImageVersion, exists := envMap["CC_IMAGE_VERSION"]
+			assert.True(t, exists, "FEE_RECIPIENT should exist in .env file")
+			assert.Contains(t, ccImageVersion, "nimbus", "CC_IMAGE_VERSION value should contain 'nimbus'")
+
+			// Read VL_IMAGE_VERSION value
+			vlImageVersion, exists := envMap["VL_IMAGE_VERSION"]
+			assert.True(t, exists, "VL_IMAGE_VERSION should exist in .env file")
+			assert.Contains(t, vlImageVersion, "nimbus", "VL_IMAGE_VERSION value should contain 'nimbus'")
+
+			// Check that the docker-compose contains the consensus and validator services
+			dockerComposeFilePath := filepath.Join(dataDirPath, "docker-compose.yml")
+			assert.FileExists(t, dockerComposeFilePath, "docker-compose.yml file should be created")
+			err = utils.ValidateCompose(dockerComposeFilePath)
+			assert.NoError(t, err, "docker-compose file should be valid")
+			composeServices, err := utils.LoadDockerComposeServices(dockerComposeFilePath)
+			for _, service := range []string{"execution", "consensus", "validator"} {
+				assert.Contains(t, composeServices, service, fmt.Sprintf("docker-compose file should contain service %s", service))
+			}
 		},
 	)
 	// Run test case

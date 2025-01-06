@@ -1,0 +1,50 @@
+{{/* opgeth.tmpl */}}
+{{ define "opexecution" }}
+  execution-l2:
+    tty: true
+    environment:
+      - TERM=xterm-256color
+      - COLORTERM=truecolor
+    stop_grace_period: 30s
+    container_name: sedge-execution-op-l2-client{{if .ContainerTag}}-{{.ContainerTag}}{{end}}
+    restart: unless-stopped
+    image: ${EC_OP_IMAGE_VERSION}
+    networks:
+      - sedge
+    volumes:
+      - ${EC_OP_DATA_DIR}:/op_geth/data
+      - ${EC_OP_JWT_SECRET_PATH}:/tmp/jwt/jwtsecret
+    ports:
+      - "{{.ElOPDiscoveryPort}}:{{.ElOPDiscoveryPort}}/tcp"
+      - "{{.ElOPDiscoveryPort}}:{{.ElOPDiscoveryPort}}/udp"
+      - "{{.ElOPMetricsPort}}:{{.ElOPMetricsPort}}"{{if .MapAllPorts}}
+      - "{{.ElOPApiPort}}:{{.ElOPApiPort}}"
+      - "{{.ElOPAuthPort}}:{{.ElOPAuthPort}}"{{end}}
+    expose:
+      - {{.ElOPApiPort}}
+      - {{.ElOPAuthPort}}
+    command:
+      - --http
+      - --http.port={{.ElOPApiPort}}
+      - --http.addr=0.0.0.0
+      - --http.vhosts=*
+      - --http.corsdomain=*
+      - --authrpc.addr=0.0.0.0
+      - --authrpc.port={{.ElOPAuthPort}}
+      - --authrpc.vhosts=*
+      - --authrpc.jwtsecret=/tmp/jwt/jwtsecret
+      - --verbosity=3
+      - --rollup.sequencerhttp=${OP_SEQUENCER_HTTP}
+      - --op-network={{.NetworkPrefix}}-${NETWORK}
+      - --datadir=/op_geth/data
+      - --discovery.port={{.ElOPDiscoveryPort}}
+      - --metrics=true
+      - --metrics.addr=0.0.0.0
+      - --metrics.port={{.ElOPMetricsPort}}{{range $flag := .ElOPExtraFlags}}
+      - --{{$flag}}{{end}}{{if .LoggingDriver}}
+    logging:
+      driver: "{{.LoggingDriver}}"{{if eq .LoggingDriver "json-file"}}
+      options:
+        max-size: "10m"
+        max-file: "10"{{end}}{{end}}
+{{ end }}

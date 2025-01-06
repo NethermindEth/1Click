@@ -95,6 +95,13 @@ func TestGenerateDockerCompose(t *testing.T) {
 		if err != nil {
 			t.Errorf("SupportedClients(\"validator\") failed: %v", err)
 		}
+		var distributedValidatorClients []string
+		if network == "holesky" {
+			distributedValidatorClients, err = c.SupportedClients("distributedValidator")
+			if err != nil {
+				t.Errorf("SupportedClients(\"distributedValidator\") failed: %v", err)
+			}
+		}
 
 		rNum, err := rand.Int(rand.Reader, big.NewInt(int64(100)))
 		if err != nil {
@@ -265,6 +272,25 @@ func TestGenerateDockerCompose(t *testing.T) {
 						},
 					)
 				}
+
+				// For distributedValidator
+				if utils.Contains(distributedValidatorClients, "charon") {
+					tests = append(tests,
+						genTestData{
+							name: fmt.Sprintf("execution: %s, consensus: %s, validator: %s,distributedValidator: %s, network: %s,  all, with distributedValidator", executionCl, consensusCl, consensusCl, distributedValidatorClients, network),
+							genData: generate.GenData{
+								Distributed:                true,
+								DistributedValidatorClient: &clients.Client{Name: "charon", Type: "distributedValidator"},
+								ExecutionClient:            &clients.Client{Name: executionCl, Type: "execution"},
+								ConsensusClient:            &clients.Client{Name: consensusCl, Type: "consensus"},
+								ValidatorClient:            &clients.Client{Name: consensusCl, Type: "validator"},
+								Services:                   []string{"execution", "consensus", "validator", "distributedValidator"},
+								Network:                    network,
+							},
+						},
+					)
+				}
+
 			}
 		}
 	}
@@ -286,6 +312,9 @@ func TestGenerateDockerCompose(t *testing.T) {
 			}
 			if tc.genData.ValidatorClient != nil {
 				tc.genData.ValidatorClient.SetImageOrDefault("")
+			}
+			if tc.genData.DistributedValidatorClient != nil {
+				tc.genData.DistributedValidatorClient.SetImageOrDefault("")
 			}
 
 			_, err := sedgeAction.Generate(actions.GenerateOptions{
@@ -346,7 +375,11 @@ func TestGenerateDockerCompose(t *testing.T) {
 				}
 				// Check that Checkpoint Sync URL is set
 				if tc.genData.CheckpointSyncUrl != "" {
-					assert.True(t, contains(t, cmpData.Services.Consensus.Command, tc.genData.CheckpointSyncUrl), "Checkpoint Sync URL not found in consensus service command: %s", cmpData.Services.Consensus.Command)
+					if tc.genData.ConsensusClient != nil && tc.genData.ConsensusClient.Name == "nimbus" {
+						assert.True(t, contains(t, cmpData.Services.ConsensusSync.Command, tc.genData.CheckpointSyncUrl), "Checkpoint Sync URL not found in consensus service command: %s", cmpData.Services.ConsensusSync.Command)
+					} else {
+						assert.True(t, contains(t, cmpData.Services.Consensus.Command, tc.genData.CheckpointSyncUrl), "Checkpoint Sync URL not found in consensus service command: %s", cmpData.Services.Consensus.Command)
+					}
 				}
 
 				// Check ccImage has the right format
@@ -468,6 +501,14 @@ func TestGenerateDockerCompose(t *testing.T) {
 					// Check that mev-boost entrypoint is set
 					assert.NotEmpty(t, cmpData.Services.Mevboost.Entrypoint)
 				}
+			}
+
+			// Validate that Distributed Validator Client info matches the sample data
+			if tc.genData.DistributedValidatorClient != nil {
+				// Check that the distributed-validator service is set.
+				assert.NotNil(t, cmpData.Services.DistributedValidator)
+				// Check that the distributed-validator container Volume is set.
+				assert.Equal(t, "${DV_DATA_DIR}:/opt/charon/.charon", cmpData.Services.DistributedValidator.Volumes[0])
 			}
 
 			if tc.genData.ValidatorClient == nil {

@@ -19,13 +19,14 @@ services:
       - -relays
       - ${RELAY_URLS}{{end}}
 {{template "consensus" .}}
+{{if .Distributed}}
+{{template "distributedValidator" .}}{{ end }}
 {{ if .WithValidatorClient}}
 {{template "validator-blocker" .}}{{end}}
 {{template "validator" .}}
-
 {{ if .WithOptimismClient}}
+{{template "opexecution" .}}
 {{template "optimism" .}}{{end}}
-
 networks:
   sedge:
     name: sedge-network{{if .ContainerTag}}-{{.ContainerTag}}{{end}}

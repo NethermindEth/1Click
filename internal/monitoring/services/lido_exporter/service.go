@@ -53,6 +53,7 @@ func NewLidoExporter(params LidoExporterParams) *LidoExporterService {
 	dotEnv["LIDO_EXPORTER_WS_ENDPOINTS"] = strings.Join(params.WSEndpoints, ",")
 	dotEnv["LIDO_EXPORTER_SCRAPE_TIME"] = params.ScrapeTime.String()
 	dotEnv["LIDO_EXPORTER_LOG_LEVEL"] = params.LogLevel
+	dotEnv["LIDO_EXPORTER_PORT"] = strconv.Itoa(int(params.Port))
 
 	return &LidoExporterService{
 		params: params,

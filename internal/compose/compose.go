@@ -20,7 +20,9 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/NethermindEth/sedge/configs"
 	"github.com/NethermindEth/sedge/internal/pkg/commands"
+	log "github.com/sirupsen/logrus"
 )
 
 // DockerComposeCmdError represents an error that occurs when running a Docker Compose command.
@@ -49,6 +51,7 @@ func NewComposeManager(runner commands.CommandRunner) *ComposeManager {
 func (cm *ComposeManager) Up(opts commands.DockerComposeUpOptions) error {
 	upCmd := cm.cmdRunner.BuildDockerComposeUpCMD(opts)
 
+	log.Infof(configs.RunningCommand, upCmd.Cmd)
 	if out, exitCode, err := cm.cmdRunner.RunCMD(upCmd); err != nil || exitCode != 0 {
 		return fmt.Errorf("%w: %s. Output: %s", DockerComposeCmdError{Cmd: "up"}, err, out)
 	}
@@ -59,6 +62,7 @@ func (cm *ComposeManager) Up(opts commands.DockerComposeUpOptions) error {
 func (cm *ComposeManager) Pull(opts commands.DockerComposePullOptions) error {
 	pullCmd := cm.cmdRunner.BuildDockerComposePullCMD(opts)
 
+	log.Infof(configs.RunningCommand, pullCmd.Cmd)
 	if out, exitCode, err := cm.cmdRunner.RunCMD(pullCmd); err != nil || exitCode != 0 {
 		return fmt.Errorf("%w: %s. Output: %s", DockerComposeCmdError{Cmd: "pull"}, err, out)
 	}
@@ -69,6 +73,7 @@ func (cm *ComposeManager) Pull(opts commands.DockerComposePullOptions) error {
 func (cm *ComposeManager) Create(opts commands.DockerComposeCreateOptions) error {
 	createCmd := cm.cmdRunner.BuildDockerComposeCreateCMD(opts)
 
+	log.Infof(configs.RunningCommand, createCmd.Cmd)
 	if out, exitCode, err := cm.cmdRunner.RunCMD(createCmd); err != nil || exitCode != 0 {
 		return fmt.Errorf("%w: %s. Output: %s", DockerComposeCmdError{Cmd: "create"}, err, out)
 	}
@@ -79,6 +84,7 @@ func (cm *ComposeManager) Create(opts commands.DockerComposeCreateOptions) error
 func (cm *ComposeManager) Build(opts commands.DockerComposeBuildOptions) error {
 	buildCmd := cm.cmdRunner.BuildDockerComposeBuildCMD(opts)
 
+	log.Infof(configs.RunningCommand, buildCmd.Cmd)
 	if out, exitCode, err := cm.cmdRunner.RunCMD(buildCmd); err != nil || exitCode != 0 {
 		return fmt.Errorf("%w: %s. Output: %s", DockerComposeCmdError{Cmd: "build"}, err, out)
 	}
@@ -90,6 +96,7 @@ func (cm *ComposeManager) Build(opts commands.DockerComposeBuildOptions) error {
 func (c *ComposeManager) PS(opts commands.DockerComposePsOptions) ([]ComposeService, error) {
 	psCmd := c.cmdRunner.BuildDockerComposePSCMD(opts)
 
+	log.Infof(configs.RunningCommand, psCmd.Cmd)
 	out, exitCode, err := c.cmdRunner.RunCMD(psCmd)
 	if err != nil || exitCode != 0 {
 		return nil, fmt.Errorf("%w: %s. Output: %s", DockerComposeCmdError{Cmd: "ps"}, err, out)
@@ -130,7 +137,11 @@ func (c *ComposeManager) PS(opts commands.DockerComposePsOptions) ([]ComposeServ
 func (cm *ComposeManager) Logs(opts commands.DockerComposeLogsOptions) error {
 	logsCmd := cm.cmdRunner.BuildDockerComposeLogsCMD(opts)
 
+	log.Infof(configs.RunningCommand, logsCmd.Cmd)
 	if out, exitCode, err := cm.cmdRunner.RunCMD(logsCmd); err != nil || exitCode != 0 {
+		if exitCode == 130 {
+			return nil
+		}
 		return fmt.Errorf("%w: %s. Output: %s", DockerComposeCmdError{Cmd: "logs"}, err, out)
 	}
 	return nil
@@ -140,6 +151,7 @@ func (cm *ComposeManager) Logs(opts commands.DockerComposeLogsOptions) error {
 func (cm *ComposeManager) Stop(opts DockerComposeStopOptions) error {
 	stopCmd := fmt.Sprintf("docker compose -f %s stop", opts.Path)
 
+	log.Infof(configs.RunningCommand, stopCmd)
 	if out, exitCode, err := cm.cmdRunner.RunCMD(commands.Command{Cmd: stopCmd, GetOutput: true}); err != nil || exitCode != 0 {
 		return fmt.Errorf("%w: %s. Output: %s", DockerComposeCmdError{Cmd: "stop"}, err, out)
 	}
@@ -150,6 +162,7 @@ func (cm *ComposeManager) Stop(opts DockerComposeStopOptions) error {
 func (cm *ComposeManager) Down(opts commands.DockerComposeDownOptions) error {
 	downCmd := cm.cmdRunner.BuildDockerComposeDownCMD(opts)
 
+	log.Infof(configs.RunningCommand, downCmd.Cmd)
 	if out, exitCode, err := cm.cmdRunner.RunCMD(downCmd); err != nil || exitCode != 0 {
 		return fmt.Errorf("%w: %s. Output: %s", DockerComposeCmdError{Cmd: "down"}, err, out)
 	}

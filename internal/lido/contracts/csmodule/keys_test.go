@@ -43,6 +43,12 @@ func TestKeysStatus(t *testing.T) {
 		{
 			"Invalid NodeID, Holesky #2", "holesky", big.NewInt(20000), true,
 		},
+		{
+			"Invalid NodeID, Mainnet", "mainnet", big.NewInt(-15), true,
+		},
+		{
+			"Valid NodeID, Mainnet", "mainnet", big.NewInt(1), false,
+		},
 	}
 
 	for _, tc := range tcs {

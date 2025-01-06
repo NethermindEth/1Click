@@ -22,6 +22,7 @@ import (
 
 	"github.com/NethermindEth/sedge/cli/actions"
 	"github.com/NethermindEth/sedge/configs"
+	"github.com/NethermindEth/sedge/internal/compose"
 	"github.com/NethermindEth/sedge/internal/pkg/commands"
 	"github.com/NethermindEth/sedge/internal/pkg/dependencies"
 	"github.com/NethermindEth/sedge/internal/utils"
@@ -30,7 +31,7 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-func LogsCmd(cmdRunner commands.CommandRunner, sedgeActions actions.SedgeActions, depsMgr dependencies.DependenciesManager) *cobra.Command {
+func LogsCmd(composeManager compose.ComposeManager, cmdRunner commands.CommandRunner, sedgeActions actions.SedgeActions, depsMgr dependencies.DependenciesManager) *cobra.Command {
 	// Flags
 	var (
 		generationPath string
@@ -65,20 +66,12 @@ func LogsCmd(cmdRunner commands.CommandRunner, sedgeActions actions.SedgeActions
 				services = args
 			}
 
-			logsCMD := cmdRunner.BuildDockerComposeLogsCMD(commands.DockerComposeLogsOptions{
+			err = composeManager.Logs(commands.DockerComposeLogsOptions{
 				Path:     file,
 				Services: services,
 				Follow:   tail == 0,
 				Tail:     tail,
 			})
-
-			log.Debugf(configs.RunningCommand, logsCMD.Cmd)
-			_, exitCode, err := cmdRunner.RunCMD(logsCMD)
-			if exitCode == 130 {
-				// A job with exit code 130 was terminated with signal 2 (SIGINT on most systems).
-				// Process interrupted by user (Ctrl+C)
-				return nil
-			}
 			if err != nil {
 				return fmt.Errorf(configs.GettingLogsError, strings.Join(services, " "), err)
 			}

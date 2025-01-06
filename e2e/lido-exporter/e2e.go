@@ -27,7 +27,7 @@ import (
 )
 
 type (
-	e2eArranger func(t *testing.T, appPath string) error
+	e2eArranger func(t *testing.T, appPath string) (map[string]string, error)
 	e2eAct      func(t *testing.T, appPath string) *exec.Cmd
 	e2eAssert   func(t *testing.T)
 )
@@ -39,6 +39,7 @@ type e2eLidoExporterTestCase struct {
 	assert   e2eAssert
 	pid      int
 	ctx      context.Context
+	envVars  []string
 }
 
 func newE2ELidoExporterTestCase(t *testing.T, arranger e2eArranger, act e2eAct, assert e2eAssert) *e2eLidoExporterTestCase {
@@ -70,9 +71,13 @@ func (e *e2eLidoExporterTestCase) run() {
 	e.Cleanup()
 	defer e.Cleanup()
 	if e.arranger != nil {
-		err := e.arranger(e.T, e.BinaryPath())
+		env, err := e.arranger(e.T, e.BinaryPath())
 		if err != nil {
 			e.T.Fatalf("error in Arrange step: %v", err)
+		}
+
+		for key, value := range env {
+			e.setEnvVariable(key, value)
 		}
 	}
 	if e.act != nil {
@@ -82,6 +87,12 @@ func (e *e2eLidoExporterTestCase) run() {
 	if e.assert != nil {
 		e.assert(e.T)
 	}
+}
+
+func (e *e2eLidoExporterTestCase) setEnvVariable(key, value string) {
+	e.T.Helper()
+	e.envVars = append(e.envVars, key)
+	os.Setenv(key, value)
 }
 
 func (e *e2eLidoExporterTestCase) BinaryPath() string {

@@ -136,16 +136,22 @@ friends, to amateur operators — to operate validators by providing an ETH-base
 Sedge supports the Lido CSM, allowing users to generate validator keys and set up their full nodes with ease. You can 
 read more about it in [our documentation](https://docs.sedge.nethermind.io/docs/quickstart/staking-with-lido)! 
 
+## Charon DV integration
+Charon is used by stakers to distribute the responsibility of running Ethereum Validators across a number of different instances and client implementations. Setting up and running a full ethereum node with charon, needs some learning curve and compatibility knowledge, in order for the setup to be fully compliant with the charon configuration requirements for different BN-VC combinations. We want to provide a better and guided user experience for setting up a DV with Charon.
+
+Integrating Charon with Sedge would make it easy for stakers to setup and run a DV with Charon without having to go through each individual client setup docs and their compatibility with DVT.
+
 ## Supported networks and clients
 
 ### Mainnet
 
 | Execution  | Consensus  | Validator  |
-| ---------- | ---------- | ---------- |
+| ---------- |------------|------------|
 | Geth       | Lighthouse | Lighthouse |
 | Nethermind | Lodestar   | Lodestar   |
 | Erigon     | Prysm      | Prysm      |
 | Besu       | Teku       | Teku       |
+|            | Nimbus     | Nimbus     |
 
 ### Sepolia
 
@@ -155,6 +161,7 @@ read more about it in [our documentation](https://docs.sedge.nethermind.io/docs/
 | Nethermind | Lodestar   | Lodestar   |
 | Erigon     | Prysm      | Prysm      |
 | Besu       | Teku       | Teku       |
+|            | Nimbus     | Nimbus     |
 
 ### Holesky
 
@@ -164,6 +171,7 @@ read more about it in [our documentation](https://docs.sedge.nethermind.io/docs/
 | Nethermind | Lodestar   | Lodestar   |
 | Erigon     | Teku       | Teku       |
 | Besu       | Prysm      | Prysm      |
+|            | Nimbus     | Nimbus     |
 
 ### Gnosis
 
@@ -172,23 +180,26 @@ read more about it in [our documentation](https://docs.sedge.nethermind.io/docs/
 | Nethermind  | Lighthouse | Lighthouse |
 | Erigon      | Lodestar   | Lodestar   |
 |             | Teku       | Teku       |
+|            | Nimbus     | Nimbus     |
 
 ### Chiado (Gnosis testnet)
 
 | Execution     | Consensus  | Validator  |
-| ------------- | ---------- | ---------- |
+|---------------| ---------- | ---------- |
 | Nethermind    | Lighthouse | Lighthouse |
 | Erigon (soon) | Lodestar   | Lodestar   |
 |               | Teku       | Teku       |
+|               | Nimbus     | Nimbus     |
 
 ### CL clients with Mev-Boost
 
-| Client     | Mev-Boost | Networks                  |
-| ---------- | --------- |---------------------------|
-| Lighthouse | yes       | Mainnet, Sepolia, Holesky |
-| Lodestar   | yes       | Mainnet, Sepolia, Holesky |
-| Prysm      | yes       | Mainnet, Sepolia, Holesky |
-| Teku       | yes       | Mainnet, Sepolia, Holesky |
+| Client     | Mev-Boost  | Networks                  |
+|------------|------------|---------------------------|
+| Lighthouse | yes        | Mainnet, Sepolia, Holesky |
+| Lodestar   | yes        | Mainnet, Sepolia, Holesky |
+| Prysm      | yes        | Mainnet, Sepolia, Holesky |
+| Teku       | yes        | Mainnet, Sepolia, Holesky |
+| Nimbus     | yes        | Mainnet, Sepolia, Holesky |
 
 ## Supported Linux flavours for dependency installation
 
@@ -256,9 +267,10 @@ The following roadmap covers the main features and ideas we want to implement bu
 
 - [x] Support Erigon on Gnosis
 - [x] Support for Lido CSM
-- [ ] Include monitoring tool for alerting, tracking validator balance, and tracking sync progress and status of nodes
+- [x] Support for Nimbus client as Consensus and Validator
+- [x] Include monitoring tool for alerting, tracking validator balance, and tracking sync progress and status of nodes
+- [x] Support for Optimism and Base.
 - [ ] More tests!!!
-- [ ] Support for Nimbus client
 
 
 ## 💪 Want to contribute?

@@ -16,8 +16,8 @@ limitations under the License.
 package lido_exporter
 
 var dotEnv map[string]string = map[string]string{
-	"LIDO_EXPORTER_IMAGE":            "nethermindeth/lido-exporter:v1.0.0",
-	"LIDO_EXPORTER_PORT":             "8080",
+	"LIDO_EXPORTER_IMAGE":            "nethermindeth/lido-exporter:v1.0.2",
+	"LIDO_EXPORTER_PORT":             "",
 	"LIDO_EXPORTER_NODE_OPERATOR_ID": "",
 	"LIDO_EXPORTER_REWARD_ADDRESS":   "",
 	"LIDO_EXPORTER_NETWORK":          "",

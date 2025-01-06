@@ -15,7 +15,9 @@ limitations under the License.
 */
 package clients
 
-import "github.com/NethermindEth/sedge/configs"
+import (
+	"github.com/NethermindEth/sedge/configs"
+)
 
 // Client : Struct Represent a client like geth, prysm, etc
 type Client struct {
@@ -34,8 +36,12 @@ func (c *Client) SetImageOrDefault(image string) {
 		c.setConsensusImage(image)
 	case "execution":
 		c.setExecutionImage(image)
+	case "distributedValidator":
+		c.setDistributedValidatorImage(image)
 	case "optimism":
 		c.setOptimismImage(image)
+	case "opexecution":
+		c.SetOpExecutionImage(image)
 	}
 }
 
@@ -62,6 +68,8 @@ func (c *Client) setConsensusImage(image string) {
 		c.Image = valueOrDefault(image, configs.ClientImages.Consensus.Teku.String())
 	case "lodestar":
 		c.Image = valueOrDefault(image, configs.ClientImages.Consensus.Lodestar.String())
+	case "nimbus":
+		c.Image = valueOrDefault(image, configs.ClientImages.Consensus.Nimbus.String())
 	}
 }
 
@@ -75,13 +83,35 @@ func (c *Client) setValidatorImage(image string) {
 		c.Image = valueOrDefault(image, configs.ClientImages.Validator.Teku.String())
 	case "lodestar":
 		c.Image = valueOrDefault(image, configs.ClientImages.Validator.Lodestar.String())
+	case "nimbus":
+		c.Image = valueOrDefault(image, configs.ClientImages.Validator.Nimbus.String())
+	}
+}
+
+func (c *Client) setDistributedValidatorImage(image string) {
+	switch c.Name {
+	case "charon":
+		c.Image = valueOrDefault(image, configs.ClientImages.Distributed.Charon.String())
+	default:
+		c.Image = valueOrDefault(image, configs.ClientImages.Distributed.Charon.String())
 	}
 }
 
 func (c *Client) setOptimismImage(image string) {
 	switch c.Name {
-	case "optimism":
+	case "opnode":
 		c.Image = valueOrDefault(image, configs.ClientImages.Optimism.OpNode.String())
+	}
+}
+
+func (c *Client) SetOpExecutionImage(image string) {
+	switch c.Name {
+	case "opgeth":
+		c.Image = valueOrDefault(image, configs.ClientImages.OpExecution.OpGeth.String())
+	case "opnethermind":
+		c.Image = valueOrDefault(image, configs.ClientImages.OpExecution.OpNeth.String())
+	case "opreth":
+		c.Image = valueOrDefault(image, configs.ClientImages.OpExecution.OpReth.String())
 	}
 }
 
@@ -92,13 +122,14 @@ func valueOrDefault(value string, defaultValue string) string {
 	return value
 }
 
-// Clients : Struct Represent a combination of execution, consensus and validator clients
+// Clients : Struct Represent a combination of execution, consensus, validator and distributed validator clients
 type Clients struct {
-	Execution   *Client
-	Consensus   *Client
-	Validator   *Client
-	ExecutionOP *Client
-	Optimism    *Client
+	Execution            *Client
+	Consensus            *Client
+	Validator            *Client
+	Optimism             *Client
+	ExecutionOP          *Client
+	DistributedValidator *Client
 }
 
 type ClientMap map[string]*Client

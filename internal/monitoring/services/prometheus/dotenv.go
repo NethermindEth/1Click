@@ -16,7 +16,11 @@ limitations under the License.
 package prometheus
 
 var dotEnv map[string]string = map[string]string{
-	"PROM_IMAGE": "prom/prometheus:v2.54.1",
-	"PROM_PORT":  "9090",
-	"PROM_CONF":  "./prometheus/prometheus.yml",
+	"PROM_IMAGE":         "prom/prometheus:v2.54.1",
+	"PROM_PORT":          "9090",
+	"PROM_CONF":          "./prometheus/prometheus.yml",
+	"PROM_RULES":         "./prometheus/rules",
+	"ALERTMANAGER_IMAGE": "prom/alertmanager:v0.27.0",
+	"ALERTMANAGER_CONF":  "./prometheus/alertmanager/alertmanager.yml",
+	"ALERTMANAGER_PORT":  "9093",
 }

@@ -59,3 +59,7 @@ update-client "Teku" "validator" ".validator.teku" "$TEKU_LATEST_VERSION"
 PRYSM_LATEST_VERSION=$(curl -H "Authorization: Bearer $PAT" -sL https://api.github.com/repos/prysmaticlabs/prysm/releases/latest | jq -r ".tag_name")
 update-client "Prysm" "consensus" ".consensus.prysm" "$PRYSM_LATEST_VERSION"
 update-client "Prysm" "validator" ".validator.prysm" "$PRYSM_LATEST_VERSION"
+
+## Charon
+CHARON_LATEST_VERSION=$(curl -H "Authorization: Bearer $PAT" -sL https://api.github.com/repos/ObolNetwork/charon/releases/latest | jq -r ".tag_name")
+update-client "Charon" "distributed" ".distributed.charon" "$PRYSM_LATEST_VERSION"

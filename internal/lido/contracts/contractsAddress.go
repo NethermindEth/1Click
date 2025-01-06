@@ -26,8 +26,8 @@ type address = map[string]string
 const (
 	// Contract names
 	CSModule                 = "csmodule"
-	CSAccounting             = "sepolia"
-	CSFeeDistributor         = "gnosis"
+	CSAccounting             = "csaccounting"
+	CSFeeDistributor         = "csfeedistributor"
 	MEVBoostRelayAllowedList = "mevboostrelayallowedlist"
 	Vebo                     = "vebo"
 )
@@ -35,19 +35,23 @@ const (
 var deployedAddresses = map[string]address{
 	CSModule: {
 		configs.NetworkHolesky: "0x4562c3e63c2e586cD1651B958C22F88135aCAd4f",
+		configs.NetworkMainnet: "0xdA7dE2ECdDfccC6c3AF10108Db212ACBBf9EA83F",
 	},
 	CSAccounting: {
 		configs.NetworkHolesky: "0xc093e53e8F4b55A223c18A2Da6fA00e60DD5EFE1",
+		configs.NetworkMainnet: "0x4d72BFF1BeaC69925F8Bd12526a39BAAb069e5Da",
 	},
 	CSFeeDistributor: {
 		configs.NetworkHolesky: "0xD7ba648C8F72669C6aE649648B516ec03D07c8ED",
+		configs.NetworkMainnet: "0xD99CC66fEC647E68294C6477B40fC7E0F6F618D0",
 	},
 	MEVBoostRelayAllowedList: {
-		configs.NetworkMainnet: "0xF95f069F9AD107938F6ba802a3da87892298610E",
 		configs.NetworkHolesky: "0x2d86C5855581194a386941806E38cA119E50aEA3",
+		configs.NetworkMainnet: "0xF95f069F9AD107938F6ba802a3da87892298610E",
 	},
 	Vebo: {
 		configs.NetworkHolesky: "0xffDDF7025410412deaa05E3E1cE68FE53208afcb",
+		configs.NetworkMainnet: "0x0De4Ea0184c2ad0BacA7183356Aea5B8d5Bf5c6e",
 	},
 }
 

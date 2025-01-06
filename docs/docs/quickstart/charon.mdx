@@ -1,0 +1,123 @@
+---
+sidebar_position: 10
+id: staking-with-obol-DV
+---
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
+# Set up an Obol DV Node with Sedge 
+
+## What are Distributed Validators?
+
+**[Read more about Obol DVs here](https://docs.obol.org/docs/int/key-concepts)**
+
+Sedge supports setting up distributed validator nodes just like it supports setting up a traditional validator node. This guide will walk you through the process of setting up a DV node using Sedge.
+
+:::tip
+
+Read more about how to generate **[Distributed Validator keys here](https://docs.obol.org/docs/next/start/quickstart_group)**.
+
+:::
+
+## Workflow breakdown
+
+The Obol DV Setup process involves a few steps:
+
+1. **Perform Obol DKG process**: Generate distributed node contents and validator keys compatible with Obol DVT using [DKG process](https://docs.obol.org/docs/next/start/quickstart_group).
+2. **Set Up Your Full Node**: Set up your full node with **sedge generate** command.
+3. **Import DKG Validator keys**: Import the keys generated in Step 1 using the **sedge import_key** command
+4. **Run the cluster**: Run the cluster using **sedge run** command. 
+
+Let's dive into each step in detail.
+
+## Using Sedge for setting up Obol DV node
+
+### Perform DKG and Generate DKG components
+
+To get started with Obol DVT using Sedge, you first need to generate your validator keys and deposit data and DV node components with [Obol DV Launchpad](https://holesky.launchpad.obol.org/).
+You need to follow the steps listed below
+1. [Step 1: Get your ENR](https://docs.obol.org/docs/next/start/quickstart_group#step-1-get-your-enr)
+2. [Step 2: Create a cluster or accept an invitation to a cluster](https://docs.obol.org/docs/next/start/quickstart_group#step-2-create-a-cluster-or-accept-an-invitation-to-a-cluster)
+3. [Step 3: Run the Distributed Key Generation (DKG) ceremony](https://docs.obol.org/docs/next/start/quickstart_group#step-3-run-the-distributed-key-generation-dkg-ceremony)
+
+At this stage, if DKG process is successful, a folder with name **.charon** will be created with the following structure for a cluster of 2 validators.
+
+```bash
+$sedge % tree .charon
+.
+├── charon-enr-private-key
+├── cluster-lock.json
+├── deposit-data.json
+└── validator_keys
+    ├── keystore-0.json
+    ├── keystore-0.txt
+    ├── keystore-1.json
+    ├── keystore-1.txt
+```
+
+### Setting up your full node
+
+Once the DKG process is complete and `.charon` folder and its contents are generated, you can set up your full node using **Sedge**:
+
+```bash
+sedge generate full-node --validator=teku --consensus=prysm --execution=nethermind --network=holesky --distributed
+```
+
+:::note
+
+This command will generate a DV enabled cluster for the Holesky testnet.
+If supported, you can set other networks by changing the `--network` flag.
+If supported, you can set other execution, consensus and validator clients using the respective flags.
+:::
+
+Once the full node setup process is complete a folder with name `sedge-data` will be created.
+
+```bash
+$sedge % tree sedge-data
+tree sedge-data                                                                                             
+sedge-data
+├── docker-compose.yml
+└── jwtsecret
+```
+Next, run the import keys step:
+
+```bash
+sedge import-key --distributed --network holesky teku
+```
+
+:::note
+
+This command will import the keys inside `.charon` folder into the validator client.
+If supported, you can set other networks by changing the `--network` flag.
+The validator client should be identical to the client used in the full-node generate command
+:::
+
+Once the private keys import process is complete, the `sedge-data` folder contents will be updated.
+
+```bash
+sedge % tree sedge-data                                      
+sedge-data
+├── docker-compose.yml
+├── jwtsecret
+├── keystore
+│   ├── deposit-data.json
+│   ├── keystore-0.txt
+│   ├── keystore-1.txt
+│   └── validator_keys
+│       ├── keystore-0.json
+│       ├── keystore-1.json
+└── validator-data
+    ├── keys
+    │   ├── keystore-0.json
+    │   ├── keystore-1.json
+    └── passwords
+        ├── keystore-0.txt
+        ├── keystore-1.txt
+```
+
+Finally run the cluster.
+
+```bash
+sedge run
+```

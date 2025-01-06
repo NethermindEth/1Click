@@ -88,6 +88,7 @@ func main() {
 		DockerClient:         dockerClient,
 		DockerServiceManager: dockerServiceManager,
 		CommandRunner:        cmdRunner,
+		ComposeManager:       *composeManager,
 	}
 	sedgeActions := actions.NewSedgeActions(sdgOpts)
 
@@ -95,10 +96,10 @@ func main() {
 	sedgeCmd.AddCommand(
 		cli.CliCmd(prompt, sedgeActions, depsMgr, monitoringMgr),
 		cli.KeysCmd(cmdRunner, prompt),
-		cli.DownCmd(cmdRunner, sedgeActions, depsMgr),
+		cli.DownCmd(*composeManager, cmdRunner, sedgeActions, depsMgr),
 		cli.ClientsCmd(),
 		cli.NetworksCmd(),
-		cli.LogsCmd(cmdRunner, sedgeActions, depsMgr),
+		cli.LogsCmd(*composeManager, cmdRunner, sedgeActions, depsMgr),
 		cli.VersionCmd(),
 		cli.SlashingExportCmd(sedgeActions, depsMgr),
 		cli.SlashingImportCmd(sedgeActions, depsMgr),

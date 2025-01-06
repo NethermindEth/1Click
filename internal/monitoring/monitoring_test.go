@@ -24,6 +24,7 @@ import (
 	"net/http/httptest"
 	"os"
 	"path/filepath"
+	"sort"
 	"strconv"
 	"strings"
 	"testing"
@@ -1674,7 +1675,7 @@ func TestAddService(t *testing.T) {
 	tests := []struct {
 		name          string
 		mocker        func(t *testing.T, ctrl *gomock.Controller, stack *data.MonitoringStack) (ServiceAPI, ComposeManager, DockerServiceManager)
-		expectedError error
+		expectedError bool
 	}{
 		{
 			name: "Add Lido exporter service (valid case)",
@@ -1705,18 +1706,19 @@ func TestAddService(t *testing.T) {
 
 				return service, composeManager, dockerServiceManager
 			},
-			expectedError: nil,
+			expectedError: false,
 		},
 		{
 			name: "Add already existing service",
 			mocker: func(t *testing.T, ctrl *gomock.Controller, stack *data.MonitoringStack) (ServiceAPI, ComposeManager, DockerServiceManager) {
 				service := mocks.NewMockServiceAPI(ctrl)
 				service.EXPECT().ContainerName().Return("sedge_prometheus").AnyTimes()
+				service.EXPECT().Name().Return(PrometheusContainerName).AnyTimes()
 				composeManager := mocks.NewMockComposeManager(ctrl)
 
 				return service, composeManager, mocks.NewMockDockerServiceManager(ctrl)
 			},
-			expectedError: errors.New("service sedge_prometheus already exists"),
+			expectedError: true,
 		},
 	}
 
@@ -1783,9 +1785,8 @@ func TestAddService(t *testing.T) {
 			manager.dockerServiceManager = dockerServiceManager
 			err = manager.AddService(service)
 
-			if tt.expectedError != nil {
+			if tt.expectedError {
 				assert.Error(t, err)
-				assert.Equal(t, tt.expectedError, err)
 				assert.Contains(t, manager.services, service)
 			} else {
 				assert.NoError(t, err)
@@ -1974,7 +1975,137 @@ func TestUpdateEnvFile(t *testing.T) {
 				assert.NoError(t, err)
 				content, err := afero.ReadFile(fs, filepath.Join(manager.stack.Path(), ".env"))
 				assert.NoError(t, err)
-				assert.Equal(t, tt.expectedEnv, string(content))
+
+				// Normalize and sort the lines for comparison
+				expectedLines := strings.Split(strings.TrimSpace(tt.expectedEnv), "\n")
+				actualLines := strings.Split(strings.TrimSpace(string(content)), "\n")
+
+				sort.Strings(expectedLines)
+				sort.Strings(actualLines)
+
+				assert.Equal(t, expectedLines, actualLines)
+			}
+		})
+	}
+}
+
+func TestValidateNewService(t *testing.T) {
+	tests := []struct {
+		name          string
+		service       func(t *testing.T, ctrl *gomock.Controller) ServiceAPI
+		expectedError error
+	}{
+		{
+			name: "new service",
+			service: func(t *testing.T, ctrl *gomock.Controller) ServiceAPI {
+				serviceMock := mocks.NewMockServiceAPI(ctrl)
+
+				serviceMock.EXPECT().ContainerName().Return("SedgeService").AnyTimes()
+
+				return serviceMock
+			},
+			expectedError: nil,
+		},
+		{
+			name: "existing service",
+			service: func(t *testing.T, ctrl *gomock.Controller) ServiceAPI {
+				promMock := mocks.NewMockServiceAPI(ctrl)
+
+				promMock.EXPECT().ContainerName().Return(PrometheusContainerName).AnyTimes()
+
+				return promMock
+			},
+			expectedError: errors.New("service sedge_prometheus already exists"),
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			// Setup mocks
+			ctrl := gomock.NewController(t)
+			grafanaMock := mocks.NewMockServiceAPI(ctrl)
+			promMock := mocks.NewMockServiceAPI(ctrl)
+			nodeExporterMock := mocks.NewMockServiceAPI(ctrl)
+
+			// Expect the service to be triggered
+
+			grafanaMock.EXPECT().ContainerName().Return(GrafanaContainerName).AnyTimes()
+			promMock.EXPECT().ContainerName().Return(PrometheusContainerName).AnyTimes()
+			nodeExporterMock.EXPECT().ContainerName().Return(NodeExporterContainerName).AnyTimes()
+
+			// Init monitoring manager and services
+			manager := MonitoringManager{
+				services: []ServiceAPI{grafanaMock, promMock, nodeExporterMock},
+			}
+			err := manager.validateNewService(tt.service(t, ctrl))
+			if tt.expectedError != nil {
+				assert.Error(t, err)
+				assert.Equal(t, tt.expectedError, err)
+			} else {
+				assert.NoError(t, err)
+			}
+		})
+	}
+}
+
+func TestMakeTarget(t *testing.T) {
+	manager := &MonitoringManager{}
+
+	tests := []struct {
+		name           string
+		service        func(t *testing.T, ctrl *gomock.Controller) ServiceAPI
+		expectedTarget types.MonitoringTarget
+		expectedLabels map[string]string
+		expectError    bool
+	}{
+		{
+			name: "Valid HTTP endpoint",
+			service: func(t *testing.T, ctrl *gomock.Controller) ServiceAPI {
+				serviceMock := mocks.NewMockServiceAPI(ctrl)
+				serviceMock.EXPECT().ContainerName().Return("SedgeService").AnyTimes()
+				serviceMock.EXPECT().Endpoint().Return("http://sedge_service:8080").AnyTimes()
+				return serviceMock
+			},
+			expectedTarget: types.MonitoringTarget{Host: "SedgeService", Port: 8080, Path: "/metrics"},
+			expectedLabels: map[string]string{InstanceIDLabel: "SedgeService"},
+			expectError:    false,
+		},
+		{
+			name: "Valid HTTPS endpoint",
+			service: func(t *testing.T, ctrl *gomock.Controller) ServiceAPI {
+				serviceMock := mocks.NewMockServiceAPI(ctrl)
+				serviceMock.EXPECT().ContainerName().Return("Service").AnyTimes()
+				serviceMock.EXPECT().Endpoint().Return("https://service:8084").AnyTimes()
+				return serviceMock
+			},
+			expectedTarget: types.MonitoringTarget{Host: "Service", Port: 8084, Path: "/metrics"},
+			expectedLabels: map[string]string{InstanceIDLabel: "Service"},
+			expectError:    false,
+		},
+		{
+			name: "Invalid endpoint format",
+			service: func(t *testing.T, ctrl *gomock.Controller) ServiceAPI {
+				serviceMock := mocks.NewMockServiceAPI(ctrl)
+				serviceMock.EXPECT().ContainerName().Return("Service").AnyTimes()
+				serviceMock.EXPECT().Endpoint().Return("invalid endpoint").AnyTimes()
+				return serviceMock
+			},
+			expectedTarget: types.MonitoringTarget{},
+			expectedLabels: nil,
+			expectError:    true,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			ctrl := gomock.NewController(t)
+			monitoringTarget, labels, err := manager.makeTarget(tt.service(t, ctrl))
+
+			if tt.expectError {
+				assert.Error(t, err)
+			} else {
+				assert.NoError(t, err)
+				assert.Equal(t, tt.expectedTarget, monitoringTarget)
+				assert.Equal(t, tt.expectedLabels, labels)
 			}
 		})
 	}

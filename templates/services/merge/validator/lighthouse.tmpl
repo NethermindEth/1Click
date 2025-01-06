@@ -20,7 +20,7 @@
       - --testnet-dir=/network_config{{end}}
       - vc{{if not .CustomConsensusConfigs}}
       - --network={{if .SplittedNetwork}}${CL_NETWORK}{{else}}${NETWORK}{{end}}{{end}}
-      - --beacon-nodes=${CC_API_URL}
+      - --beacon-nodes={{if .Distributed}}${DV_API_URL}{{else}}${CC_API_URL}{{end}}
       - --graffiti=${GRAFFITI}
       - --debug-level=${VL_LOG_LEVEL}
       - --validators-dir=/data/validators{{with .FeeRecipient}}
@@ -29,7 +29,8 @@
       - --metrics-port={{.VlMetricsPort}}
       - --metrics-address=0.0.0.0{{range $flag := .VlExtraFlags}}
       - --{{$flag}}{{end}}{{if .MevBoostOnValidator}}
-      - --builder-proposals{{end}}{{if .LoggingDriver}}
+      - --builder-proposals{{end}}{{if .Distributed}}
+      - --distributed{{end}}{{if .LoggingDriver}}
     logging:
       driver: "{{.LoggingDriver}}"{{if eq .LoggingDriver "json-file"}}
       options:

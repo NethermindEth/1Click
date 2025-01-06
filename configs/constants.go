@@ -18,7 +18,8 @@ package configs
 var Dependencies []string = []string{"docker"}
 
 const (
-	OnPremiseExecutionURL   = "http://execution"
-	OnPremiseConsensusURL   = "http://consensus"
-	OnPremiseOpExecutionURL = "http://execution-l2"
+	OnPremiseExecutionURL            = "http://execution"
+	OnPremiseConsensusURL            = "http://consensus"
+	OnPremiseDistributedValidatorURL = "http://dv"
+	OnPremiseOpExecutionURL          = "http://execution-l2"
 )

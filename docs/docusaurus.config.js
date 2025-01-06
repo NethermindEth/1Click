@@ -1,7 +1,8 @@
 // @ts-check
 // Note: type annotations allow type checking and IDEs autocompletion
 
-import {themes as prismThemes} from 'prism-react-renderer';
+const lightCodeTheme = require('prism-react-renderer/themes/github');
+const darkCodeTheme = require('prism-react-renderer/themes/dracula');
 
 /** @type {import('@docusaurus/types').Config} */
 const config = {
@@ -14,14 +15,10 @@ const config = {
   favicon: 'img/favicon.ico',
 
   // GitHub pages deployment config.
-  // If you aren't using GitHub pages, you don't need these.
-  organizationName: 'NethermindEth', // Usually your GitHub org/user name.
-  projectName: 'sedge', // Usually your repo name.
+  organizationName: 'NethermindEth',
+  projectName: 'sedge',
   trailingSlash: false,
 
-  // Even if you don't use internalization, you can use this field to set useful
-  // metadata like html lang. For example, if your site is Chinese, you may want
-  // to replace "en" with "zh-Hans".
   i18n: {
     defaultLocale: 'en',
     locales: ['en'],
@@ -34,18 +31,9 @@ const config = {
       ({
         docs: {
           sidebarPath: require.resolve('./sidebars.js'),
-          // Please change this to your repo.
-          // Remove this to remove the "edit this page" links.
           editUrl:
-            'https://github.com/NethermindEth/sedge/tree/main/docs/',
+              'https://github.com/NethermindEth/sedge/tree/main/docs/',
         },
-        // blog: {
-        //   showReadingTime: true,
-        //   // Please change this to your repo.
-        //   // Remove this to remove the "edit this page" links.
-        //   editUrl:
-        //     'https://github.com/facebook/docusaurus/tree/main/packages/create-docusaurus/templates/shared/',
-        // },
         theme: {
           customCss: require.resolve('./src/css/custom.css'),
         },
@@ -54,96 +42,168 @@ const config = {
   ],
 
   themeConfig:
-    /** @type {import('@docusaurus/preset-classic').ThemeConfig} */
-    ({
-      navbar: {
-        title: 'Sedge',
-        // logo: {
-        //   alt: 'My Site Logo',
-        //   src: 'img/logo.svg',
-        // },
-        items: [
-          {
-            type: 'doc',
-            docId: 'intro',
-            position: 'left',
-            label: 'Docs',
+  /** @type {import('@docusaurus/preset-classic').ThemeConfig} */
+      ({
+        navbar: {
+          title: '',
+          logo: {
+            alt: 'Sedge Logo',
+            src: 'img/Sedge_Horizontal_Dark.svg', // Dark theme logo
+            srcDark: 'img/Sedge_Horizontal_Light.svg', // Light theme logo
           },
-          //{to: '/blog', label: 'Blog', position: 'left'},
-          {
-            href: 'https://github.com/NethermindEth/sedge',
-            label: 'GitHub',
-            position: 'right',
-          },
-        ],
-      },
-      footer: {
-        style: 'dark',
-        links: [
-          {
-            title: 'Docs',
-            items: [
-              {
-                label: 'Tutorial',
-                to: '/docs/intro',
-              },
-            ],
-          },
-          {
-            title: 'Community',
-            items: [
-              {
-                label: 'Discord',
-                href: 'https://discord.com/invite/PaCMRFdvWT',
-              },
-              {
-                label: 'Twitter',
-                href: 'https://twitter.com/nethermindeth',
-              },
-            ],
-          },
-          {
-            title: 'More',
-            items: [
-              // {
-              //   label: 'Blog',
-              //   to: '/blog',
-              // },
-              {
-                label: 'GitHub',
-                href: 'https://github.com/NethermindEth/sedge',
-              },
-            ],
-          },
-        ],
-        copyright: `Copyright © ${new Date().getFullYear()} Nethermind. Built with Docusaurus.`,
-      },
-      prism: {
-        theme: prismThemes.github,
-        darkTheme: prismThemes.dracula,
-      },
-      algolia: {
-        // The application ID provided by Algolia
-        appId: 'HR7BYPH22J',
-
-        // Public API key: it is safe to commit it
-        apiKey: '9fd1f2f1dfdc41503fea4f38c11fe89f',
-
-        indexName: 'sedge-nethermind',
-
-        contextualSearch: true,
-
-        // Optional: Specify domains where the navigation should occur through window.location instead on history.push. Useful when our Algolia config crawls multiple documentation sites and we want to navigate with window.location.href to them.
-        externalUrlRegex: 'external\\.com|domain\\.com',
-
-        // Optional: Algolia search parameters
-        searchParameters: {},
-
-        // Optional: path for search page that enabled by default (`false` to disable it)
-        searchPagePath: 'false',
-
-      },
-    }),
+          items: [
+            {
+              type: 'doc',
+              docId: 'intro',
+              position: 'left',
+              label: 'Documentation',
+            },
+            {
+              type: 'dropdown',
+              label: 'Networks',
+              position: 'left',
+              items: [
+                {
+                  label: 'Ethereum',
+                  to: '/docs/networks/mainnet',
+                },
+                {
+                  label: 'Holesky',
+                  to: '/docs/networks/holesky',
+                },
+                {
+                  label: 'Sepolia',
+                  to: '/docs/networks/sepolia',
+                },
+                {
+                  label: 'Gnosis',
+                  to: '/docs/networks/gnosis',
+                },
+                {
+                  label: 'Chiado',
+                  to: '/docs/networks/chiado',
+                },
+                {
+                  label: 'Optimism',
+                  to: '/docs/quickstart/running-optimism-node',
+                },
+                {
+                  label: 'Base',
+                  to: '/docs/quickstart/running-optimism-node#base-support',
+                },
+                {
+                  label: 'Lido CSM',
+                  to: '/docs/quickstart/staking-with-lido',
+                },
+              ]
+            },
+            {
+              href: 'https://github.com/NethermindEth/sedge',
+              label: 'GitHub',
+              position: 'right',
+            },
+          ],
+        },
+        footer: {
+          // style: 'dark',
+          links: [
+            {
+              title: 'Networks',
+              items: [
+                {
+                  label: 'Mainnet',
+                  to: '/docs/networks/mainnet',
+                },
+                {
+                  label: 'Sepolia',
+                  to: '/docs/networks/sepolia',
+                },
+                {
+                  label: 'Holesky',
+                  to: '/docs/networks/holesky',
+                },
+                {
+                  label: 'Gnosis',
+                  to: '/docs/networks/gnosis',
+                },
+                {
+                  label: 'Chiado',
+                  to: '/docs/networks/chiado',
+                },
+                {
+                  label: 'Optimism',
+                  to: '/docs/quickstart/running-optimism-node',
+                },
+                {
+                  label: 'Base',
+                  to: '/docs/quickstart/running-optimism-node#base-support',
+                },
+                {
+                  label: 'Lido CSM',
+                  to: '/docs/quickstart/staking-with-lido',
+                },
+              ],
+            },
+            {
+              title: 'Community',
+              items: [
+                {
+                  label: 'Discord',
+                  href: 'https://discord.com/invite/PaCMRFdvWT',
+                },
+                {
+                  label: 'Twitter',
+                  href: 'https://twitter.com/nethermindeth',
+                },
+                {
+                  label: 'GitHub',
+                  href: 'https://github.com/NethermindEth/sedge',
+                },
+              ],
+            },
+            {
+              title: 'GitHub Repositories',
+              items: [
+                {
+                  label: 'Sedge',
+                  href: 'https://github.com/NethermindEth/sedge',
+                },
+                {
+                  label: 'Nethermind',
+                  href: 'https://github.com/NethermindEth/nethermind',
+                },
+              ],
+            },
+            {
+              title: 'More',
+              items: [
+                {
+                  label: 'Nethermind',
+                  href: 'https://nethermind.io/',
+                },
+                {
+                  label: 'Documentation',
+                  to: '/docs/intro',
+                },
+              ],
+            },
+          ],
+          copyright: `Copyright © ${new Date().getFullYear()} Nethermind. Built with Docusaurus.`,
+        },
+        prism: {
+          theme: lightCodeTheme,
+          darkTheme: darkCodeTheme,
+        },
+        algolia: {
+          appId: 'HR7BYPH22J',
+          apiKey: '9fd1f2f1dfdc41503fea4f38c11fe89f',
+          indexName: 'sedge-nethermind',
+          contextualSearch: true,
+          externalUrlRegex: 'external\\.com|domain\\.com',
+          searchParameters: {},
+          searchPagePath: 'false',
+        },
+      }),
 };
 
-export default config;
+module.exports = config;

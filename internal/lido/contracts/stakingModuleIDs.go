@@ -24,6 +24,7 @@ import (
 
 var stakingModuleIDs = map[string]*big.Int{
 	configs.NetworkHolesky: big.NewInt(4),
+	configs.NetworkMainnet: big.NewInt(2),
 }
 
 func StakingModuleID(network string) (*big.Int, error) {

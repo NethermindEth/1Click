@@ -12,15 +12,25 @@ Lido Exporter is a service that exports data from the Lido CSM smart contracts a
 
 ### Running with Docker
 
-1. Build the Docker image:
-   ```
-   docker build -t lido-exporter .
-   ```
+You can easily run the Lido Exporter using Docker. There is a published Docker image available, which eliminates the need to build the image yourself.
 
-2. Run the Docker container:
-   ```
-   docker run -d -p 8080:8080 -e LIDO_EXPORTER_NODE_OPERATOR_ID=<your_node_operator_id> -e LIDO_EXPORTER_NETWORK=<network_name> lido-exporter
-   ```
+1. Pull the Docker image:
+
+    ```bash
+    docker pull nethermindeth/lido-exporter:latest
+    ```
+
+2. Run the Docker container with the necessary environment variables:
+
+    ```bash
+    docker run -d -p 8080:8080 \
+      -e LIDO_EXPORTER_NODE_OPERATOR_ID=<your_node_operator_id> \
+      -e LIDO_EXPORTER_NETWORK=<network_name> \
+      nethermindeth/lido-exporter:latest
+    ```
+
+- The container listens on port `8080` by default, but you can change this using the `LIDO_EXPORTER_PORT` environment variable.
+- The metrics will be available at `http://localhost:8080/metrics`.
 
 ### Running as a CLI Application
 

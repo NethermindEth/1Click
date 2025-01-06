@@ -1,0 +1,42 @@
+name: Go Code Generation Check
+
+on:
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  generate:
+    name: Check Code Generation
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.22'
+
+      - name: Set up Go bin in PATH
+        run: echo "${HOME}/go/bin" >> $GITHUB_PATH
+
+      - name: Install Dependencies and Tools
+        run: |
+          make install-deps install-abigen install-mockgen
+
+      - name: Generate Code
+        run: make generate
+
+      - name: Check for Uncommitted Changes
+        run: |
+          if [[ $(git status --porcelain) ]]; then
+            echo '::error::Uncommitted changes detected. Please run `make generate` and commit the generated code.'
+            echo 'Modified files:'
+            git status --porcelain
+            exit 1
+          else
+            echo 'No uncommitted changes. All generated code is up to date.'
+          fi

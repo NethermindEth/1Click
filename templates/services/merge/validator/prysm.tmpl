@@ -20,7 +20,7 @@
       - --wallet-password-file=/keystore/keystore_password.txt{{if .CustomConsensusConfigs}}{{if .CustomNetworkConfigPath}}
       - --chain-config-file=/network_config/config.yml{{end}}{{else}}
       - --{{if .SplittedNetwork}}${CL_NETWORK}{{else}}${NETWORK}{{end}}{{end}}
-      - --beacon-rpc-provider=${CC_ADD_API_URL}
+      - --beacon-rpc-provider={{if .Distributed}}${DV_API_URL}{{else}}${CC_ADD_API_URL}{{end}}
       - --graffiti=${GRAFFITI}
       - --verbosity=${VL_LOG_LEVEL}
       - --accept-terms-of-use

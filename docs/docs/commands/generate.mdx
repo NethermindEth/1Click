@@ -52,7 +52,7 @@ Use "sedge generate [command] --help" for more information about a command.
 
 ### Lido Flow
 
-With the `--lido` flag, you can generate a Lido CSM node. This will generate a full node, a execution, a consensus, a validator o a mev-boost node with the Lido CSM configuration.
+With the `--lido` flag, you can generate a Lido CSM node. This will generate a full node, a execution, a consensus, a validator or a mev-boost node with the Lido CSM configuration.
 
 It will include in the configuration of the selected node:
 - Lido Withdrawal Credentials
@@ -88,6 +88,8 @@ Flags:
   -c, --consensus string                  Consensus engine client, e.g. teku, lodestar, prysm, lighthouse, Nimbus. Additionally, you can use this syntax '<CLIENT>:<DOCKER_IMAGE>' to override the docker image used for the client. If you want to use the default docker image, just use the client name
   -e, --execution string                  Execution engine client, e.g. geth, nethermind, besu, erigon. Additionally, you can use this syntax '<CLIENT>:<DOCKER_IMAGE>' to override the docker image used for the client. If you want to use the default docker image, just use the client name
   -v, --validator string                  Validator engine client, e.g. teku, lodestar, prysm, lighthouse, Nimbus. Additionally, you can use this syntax '<CLIENT>:<DOCKER_IMAGE>' to override the docker image used for the client. If you want to use the default docker image, just use the client name
+      --distributed boolean               Deploy a node configured to run as part of a Distributed Validator Cluster.
+  -d  --distributedValidator string       Distributed Validator client, e.g. charon. Additionally, you can use this syntax '<CLIENT>:<DOCKER_IMAGE>' to override the docker image used for the client. If you want to use the default docker image, just use the client name
       --latest                            Use the latest version of clients. This sets the "latest" tag on the client's docker images. Latest version might not work.
       --checkpoint-sync-url string        Initial state endpoint (trusted synced consensus endpoint) for the consensus client to sync from a finalized checkpoint. Provide faster sync process for the consensus client and protect it from long-range attacks affored by Weak Subjetivity. Each network has a default checkpoint sync url.
       --fee-recipient string              Suggested fee recipient. Is a 20-byte Ethereum address which the execution layer might choose to set as the coinbase and the recipient of other fees or rewards. There is no guarantee that an execution node will use the suggested fee recipient to collect fees, it may use any address it chooses. It is assumed that an honest execution node will use the suggested fee recipient, but users should note this trust assumption.
@@ -104,6 +106,7 @@ Flags:
       --el-extra-flag stringArray         Additional flag to configure the execution client service in the generated docker-compose script. Example: 'sedge generate full-node --el-extra-flag "<flag1>=value1" --el-extra-flag "<flag2>=\"value2\""'
       --cl-extra-flag stringArray         Additional flag to configure the consensus client service in the generated docker-compose script. Example: 'sedge generate full-node --cl-extra-flag "<flag1>=value1" --cl-extra-flag "<flag2>=\"value2\""'
       --vl-extra-flag stringArray         Additional flag to configure the validator client service in the generated docker-compose script. Example: 'sedge generate full-node --vl-extra-flag "<flag1>=value1" --vl-extra-flag "<flag2>=\"value2\""'
+      --dv-extra-flag stringArray         Additional flag to configure the distributed validator client service in the generated docker-compose script. Example: 'sedge generate full-node --distributed --dv-extra-flag "<flag1>=value1" --dv-extra-flag "CHARON_FEATURE_SET=\"alpha\""'
       --custom-chainSpec string           File path or url to use as custom network chainSpec for execution client.
       --custom-config string              File path or url to use as custom network config file for consensus client.
       --custom-genesis string             File path or url to use as custom network genesis for consensus client.
@@ -145,7 +148,7 @@ Usage:
 Flags:
   -c, --consensus string                  Consensus engine client, e.g. teku, lodestar, prysm, lighthouse, Nimbus. Additionally, you can use this syntax '<CLIENT>:<DOCKER_IMAGE>' to override the docker image used for the client. If you want to use the default docker image, just use the client name
       --op-image string                   Optimism consensus client image.
-      --op-execution-image string         Image name set for nethermind client to be used with optimism.
+      --op-execution string               Optimism Execution client to be used, op-nethermind, op-geth, or op-reth. Additionally, you can use this syntax '<CLIENT>:<DOCKER_IMAGE>' to override the docker image used for the client. If you want to use the default docker image, just use the client name.
   -e, --execution string                  Execution engine client, e.g. geth, nethermind, besu, erigon. Additionally, you can use this syntax '<CLIENT>:<DOCKER_IMAGE>' to override the docker image used for the client. If you want to use the default docker image, just use the client name
       --execution-api-url string          Set execution api url. If Set, will omit the creation of execution and beacon nodes, and only create optimism nodes.
       --consensus-url string          Set consensus api url. If Set, will omit the creation of execution and beacon nodes, and only create optimism nodes.

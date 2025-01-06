@@ -67,7 +67,7 @@ func TestGetRequest(t *testing.T) {
 		},
 		{
 			"No response",
-			"http://127.0.0.1:8080" + "/",
+			"http://127.0.0.1:8088" + "/",
 			"",
 			time.Second,
 			true,

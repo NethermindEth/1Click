@@ -30,4 +30,9 @@ func (e *e2eLidoExporterTestCase) Cleanup() {
 			process.Signal(syscall.SIGTERM)
 		}
 	}
+
+	// Restore environment variables
+	for _, env := range e.envVars {
+		os.Unsetenv(env)
+	}
 }

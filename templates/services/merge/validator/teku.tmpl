@@ -17,7 +17,7 @@
     command:
       - validator-client{{if .CustomConsensusConfigs}}{{if .CustomNetworkConfigPath}}
       - --network=/network_config/config.yml{{end}}{{end}}
-      - --beacon-node-api-endpoint=${CC_API_URL}
+      - --beacon-node-api-endpoint={{if .Distributed}}${DV_API_URL}{{else}}${CC_API_URL}{{end}}
       - --data-path=/data
       - --log-destination=CONSOLE
       - --validators-graffiti=${GRAFFITI}

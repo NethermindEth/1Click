@@ -1,0 +1,30 @@
+{{/* charon.tmpl */}}
+{{ define "distributedValidator" }}
+  dv:
+    container_name: sedge-dv-client{{if .ContainerTag}}-{{.ContainerTag}}{{end}}
+    image: ${DV_IMAGE_VERSION}
+    environment:
+      - CHARON_BEACON_NODE_ENDPOINTS=${CC_API_URL}
+      - CHARON_LOG_LEVEL=${DV_LOG_LEVEL:-info}
+      - CHARON_LOG_FORMAT=${DV_LOG_FORMAT:-console}
+      - CHARON_P2P_RELAYS=${DV_P2P_RELAYS:-https://0.relay.obol.tech,https://1.relay.obol.tech}
+      - CHARON_P2P_EXTERNAL_HOSTNAME=${DV_INSTANCE_NAME:-charon}
+      - CHARON_P2P_TCP_ADDRESS=0.0.0.0:{{.DVDiscoveryPort}}
+      - CHARON_VALIDATOR_API_ADDRESS=127.0.0.1:{{.DVApiPort}}
+      - CHARON_MONITORING_ADDRESS=0.0.0.0:{{.DVMetricsPort}}{{if .MevBoostOnValidator}}
+      - CHARON_BUILDER_API={{.MevBoostOnValidator}}{{end}} 
+      {{- range $i, $flag := .DvExtraFlags }}
+      - {{$flag}}
+      {{- end }} 
+    ports:
+      - ${CHARON_PORT_P2P_TCP:-{{.DVDiscoveryPort}}}:${CHARON_PORT_P2P_TCP:-{{.DVDiscoveryPort}}}/tcp
+    expose:
+      - {{.DVMetricsPort}}
+    networks:
+      - sedge
+    volumes:
+      - ${DV_DATA_DIR}:/opt/charon/.charon
+    restart: unless-stopped
+    healthcheck:
+      test: wget -qO- http://localhost:{{.DVMetricsPort}}/readyz
+{{ end }}

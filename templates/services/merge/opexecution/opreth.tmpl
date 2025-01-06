@@ -1,0 +1,49 @@
+{{/* opreth.tmpl */}}
+{{ define "opexecution" }}
+  execution-l2:
+    tty: true
+    environment:
+      - TERM=xterm-256color
+      - COLORTERM=truecolor
+    stop_grace_period: 30s
+    container_name: sedge-execution-op-l2-client{{if .ContainerTag}}-{{.ContainerTag}}{{end}}
+    restart: unless-stopped
+    image: ${EC_OP_IMAGE_VERSION}
+    networks:
+      - sedge
+    volumes:
+      - ${EC_OP_DATA_DIR}:/reth/data
+      - ${EC_OP_JWT_SECRET_PATH}:/tmp/jwt/jwtsecret
+    ports:
+      - "{{.ElOPDiscoveryPort}}:{{.ElOPDiscoveryPort}}/tcp"
+      - "{{.ElOPDiscoveryPort}}:{{.ElOPDiscoveryPort}}/udp"
+      - "{{.ElOPMetricsPort}}:{{.ElOPMetricsPort}}"{{if .MapAllPorts}}
+      - "{{.ElOPApiPort}}:{{.ElOPApiPort}}"
+      - "{{.ElOPAuthPort}}:{{.ElOPAuthPort}}"{{end}}
+    expose:
+      - {{.ElOPApiPort}}
+      - {{.ElOPAuthPort}}
+    command:
+      - node
+      - -vvv
+      - --datadir=/reth/data
+      - --log.stdout.format=${RETH_OP_LOG_LEVEL}
+      - --http
+      - --http.corsdomain=*
+      - --http.addr=0.0.0.0
+      - --http.port={{.ElOPApiPort}}
+      - --http.api=debug,eth,net,txpool
+      - --authrpc.addr=0.0.0.0
+      - --authrpc.port={{.ElOPAuthPort}}
+      - --authrpc.jwtsecret=/tmp/jwt/jwtsecret
+      - --metrics=0.0.0.0:{{.ElOPMetricsPort}}
+      - --chain=${RETH_NETWORK}
+      - --rollup.sequencer-http=${OP_SEQUENCER_HTTP}
+      - --rollup.disable-tx-pool-gossip{{range $flag := .ElOPExtraFlags}}
+      - --{{$flag}}{{end}}{{if .LoggingDriver}}
+    logging:
+      driver: "{{.LoggingDriver}}"{{if eq .LoggingDriver "json-file"}}
+      options:
+        max-size: "10m"
+        max-file: "10"{{end}}{{end}}
+{{ end }}

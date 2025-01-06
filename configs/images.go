@@ -29,15 +29,26 @@ var ClientImages struct {
 		Lodestar   Image `yaml:"lodestar"`
 		Teku       Image `yaml:"teku"`
 		Prysm      Image `yaml:"prysm"`
+		Nimbus     Image `yaml:"nimbus"`
 	}
 	Validator struct {
 		Lighthouse Image `yaml:"lighthouse"`
 		Lodestar   Image `yaml:"lodestar"`
 		Teku       Image `yaml:"teku"`
 		Prysm      Image `yaml:"prysm"`
+		Nimbus     Image `yaml:"nimbus"`
+		Charon     Image `yaml:"charon"`
+	}
+	Distributed struct {
+		Charon Image `yaml:"charon"`
 	}
 	Optimism struct {
-		OpNode Image `yaml:"optimism"`
+		OpNode Image `yaml:"opnode"`
+	}
+	OpExecution struct {
+		OpGeth Image `yaml:"opgeth"`
+		OpNeth Image `yaml:"opnethermind"`
+		OpReth Image `yaml:"opreth"`
 	}
 }
 

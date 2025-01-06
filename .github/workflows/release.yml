@@ -133,7 +133,7 @@ jobs:
           token: ${{ steps.gh-app.outputs.token }}
           commit-message: Update Homebrew to latest release
           title: "[Release] Update Homebrew"
-          reviewers: AntiD2ta, cbermudez97, stdevMac, adriantpaez
+          reviewers: AntiD2ta, cbermudez97, adriantpaez
           draft: false
           path: homebrew-sedge
           add-paths: |

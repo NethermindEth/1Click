@@ -58,7 +58,7 @@ This is an example of exporting slashing protection data from a setup using sepo
 ```shell
 $ sedge slashing-export lighthouse -n sepolia --out slashing-protection.json
 2023-01-06 15:47:56 -- [INFO] [Logger Init] Log level: info
-2023-01-06 15:47:57 -- [INFO] You are running the latest version of sedge. Version:  v1.5.0
+2023-01-06 15:47:57 -- [INFO] You are running the latest version of sedge. Version:  v1.7.2
 2023-01-06 15:47:57 -- [INFO] Exporting slashing data from client lighthouse
 # highlight-next-line
 2023-01-06 15:47:57 -- [INFO] The slashing protection container is starting...
@@ -71,7 +71,7 @@ Notice in this case the validator client remains stopped because it has been sto
 ```shell
 $ sedge slashing-export lighthouse -n sepolia --out slashing-protection.json --start-validator
 2023-01-06 15:51:11 -- [INFO] [Logger Init] Log level: info
-2023-01-06 15:51:11 -- [INFO] You are running the latest version of sedge. Version:  v1.5.0
+2023-01-06 15:51:11 -- [INFO] You are running the latest version of sedge. Version:  v1.7.2
 2023-01-06 15:51:11 -- [INFO] Exporting slashing data from client lighthouse
 2023-01-06 15:51:11 -- [INFO] The slashing protection container is starting...
 2023-01-06 15:51:12 -- [INFO] The slashing container ends successfully.
@@ -86,7 +86,7 @@ Another case may be exporting the slashing data protection when the validator is
 ```shell
 $ sedge slashing-export lighthouse -n sepolia --out slashing-protection.json                  
 2023-01-06 15:51:46 -- [INFO] [Logger Init] Log level: info
-2023-01-06 15:51:46 -- [INFO] You are running the latest version of sedge. Version:  v1.5.0
+2023-01-06 15:51:46 -- [INFO] You are running the latest version of sedge. Version:  v1.7.2
 # highlight-next-line
 2023-01-06 15:51:46 -- [INFO] Stopping validator client
 # highlight-next-line
@@ -107,7 +107,7 @@ In this case, the validator client is stopped before the export and started agai
  ```shell
 $ sedge slashing-export lighthouse -n sepolia --out slashing-protection.json --stop-validator
 2023-01-06 15:52:07 -- [INFO] [Logger Init] Log level: info
-2023-01-06 15:52:07 -- [INFO] You are running the latest version of sedge. Version:  v1.5.0
+2023-01-06 15:52:07 -- [INFO] You are running the latest version of sedge. Version:  v1.7.2
 # highlight-next-line
 2023-01-06 15:52:07 -- [INFO] Stopping validator client
 # highlight-next-line

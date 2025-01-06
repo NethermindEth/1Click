@@ -21,6 +21,7 @@ import (
 	"testing"
 
 	"github.com/NethermindEth/sedge/cli/actions"
+	"github.com/NethermindEth/sedge/internal/compose"
 	"github.com/NethermindEth/sedge/internal/pkg/commands"
 	"github.com/NethermindEth/sedge/test"
 	"github.com/stretchr/testify/assert"
@@ -74,8 +75,10 @@ func TestSetupContainers(t *testing.T) {
 					return "", 0, nil
 				},
 			}
+			composeMgr := compose.NewComposeManager(commandRunner)
 			sedgeActions := actions.NewSedgeActions(actions.SedgeActionsOptions{
-				CommandRunner: commandRunner,
+				CommandRunner:  commandRunner,
+				ComposeManager: *composeMgr,
 			})
 			sedgeActions.SetupContainers(tc.options)
 		})

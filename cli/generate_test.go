@@ -156,6 +156,12 @@ func (flags *GenCmdFlags) argsList() []string {
 	if flags.latestVersion {
 		s = append(s, "--latest")
 	}
+	if flags.distributed {
+		s = append(s, "--distributed")
+	}
+	if flags.distributedValidatorName != "" {
+		s = append(s, "--distributedValidator", flags.distributedValidatorName)
+	}
 	return s
 }
 
@@ -1314,6 +1320,42 @@ func TestGenerateCmd(t *testing.T) {
 				consensusApiUrl: "https://localhost:8000/api/endpoint",
 			},
 			globalFlags{},
+			nil,
+		},
+		{
+			"full-node random client Distributed",
+			subCmd{
+				name: "full-node",
+				args: []string{},
+			},
+			GenCmdFlags{
+				distributed:   true,
+				validatorName: "lighthouse",
+			},
+			globalFlags{
+				network: "holesky",
+			},
+			nil,
+		},
+		{
+			"full-node Fixed clients with DV",
+			subCmd{
+				name: "full-node",
+				args: []string{},
+			},
+			GenCmdFlags{
+				distributed:              true,
+				executionName:            "nethermind",
+				consensusName:            "lighthouse",
+				validatorName:            "lighthouse",
+				distributedValidatorName: "charon",
+				feeRecipient:             "0x0000000000000000000000000000000000000000",
+			},
+			globalFlags{
+				install: false,
+				logging: "",
+				network: "holesky",
+			},
 			nil,
 		},
 		{

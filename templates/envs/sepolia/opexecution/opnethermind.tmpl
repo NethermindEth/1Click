@@ -1,0 +1,10 @@
+{{/* opnethermind.tmpl */}}
+{{ define "opexecution" }}
+# --- Layer 2 - Optimism Execution Node - configuration ---
+EXECUTION_OP_API_URL={{.ExecutionOPApiURL}}
+EC_OP_IMAGE_VERSION={{.ElOpImage}}
+EC_OP_DATA_DIR={{.ElDataDir}}-op
+EC_OP_JWT_SECRET_PATH={{.JWTOPSecretPath}}
+NETHERMIND_OP_LOG_LEVEL=INFO
+OP_SEQUENCER_HTTP={{.OpSequencerHttp}}
+{{ end }}

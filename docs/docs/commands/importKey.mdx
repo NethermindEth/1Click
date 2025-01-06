@@ -40,6 +40,7 @@ Flags:
       --custom-config string         file path or url to use as custom network config.
       --custom-deploy-block string   custom network deploy block.
       --custom-genesis string        file path or url to use as custom network genesis.
+      --distributed boolean           Import keys generated in a Distributed Key Generation (DKG) process
       --from string                  path to the validator keys, must follow the EIP-2335: BLS12-381 Keystore standard (default "[WORK_DIR]/sedge-data/keystore")
   -h, --help                         help for import-key
   -n, --network string               network (default "mainnet")
@@ -79,7 +80,7 @@ To import the validator keys, and start the validator client after the import, r
 ```shell
 $ sedge import-key --from keystore -n sepolia --start-validator prysm
 2023-01-26 11:59:34 -- [INFO] [Logger Init] Log level: info
-2023-01-26 11:59:34 -- [INFO] You are running the latest version of sedge. Version:  v1.5.0
+2023-01-26 11:59:34 -- [INFO] You are running the latest version of sedge. Version:  v1.7.2
 # highlight-next-line
 2023-01-26 11:59:34 -- [WARN] The keys path is not the default one, copying the keys to the default path /root/sedge/example/sedge-data/keystore
 2023-01-26 11:59:34 -- [INFO] Importing validator keys
@@ -113,6 +114,14 @@ The resulted folder structure is:
     ├── keystore/
     └── validator-data/
 ```
+
+:::note
+
+If you have to import your keys to nimbus, you will need to manually type the password when loading the keys, since the nimbus client does not support non interactive password loading.
+
+Importing keys on Nimbus is done using the consensus client container instead of the validator client container.
+
+:::
 
 Notice the new folder `keystore` inside the `sedge-data` folder, this is where
 the validator keys are copied to. Also notice the new folder `validator-data`,

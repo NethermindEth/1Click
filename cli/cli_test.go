@@ -39,7 +39,7 @@ func TestCli(t *testing.T) {
 	// Silence logger
 	log.SetOutput(io.Discard)
 
-	mevboostRelayListUris, _ := mevboostrelaylist.RelaysURI("mainnet")
+	mainnetMevboostRelayListUris, _ := mevboostrelaylist.RelaysURI("mainnet")
 	holeskyMevboostRelayListUris, _ := mevboostrelaylist.RelaysURI("holesky")
 
 	ETHClients := map[string][]string{
@@ -527,7 +527,7 @@ func TestCli(t *testing.T) {
 			},
 		},
 		{
-			name: "full node with Lido",
+			name: "full node with Lido, mainnet",
 			setup: func(t *testing.T, sedgeActions *sedge_mocks.MockSedgeActions, prompter *sedge_mocks.MockPrompter, depsMgr *sedge_mocks.MockDependenciesManager) {
 				generationPath := t.TempDir()
 				genData := generate.GenData{
@@ -555,7 +555,7 @@ func TestCli(t *testing.T) {
 					VLStartGracePeriod: 840,
 					Mev:                true,
 					MevImage:           "flashbots/mev-boost:latest",
-					RelayURLs:          mevboostRelayListUris,
+					RelayURLs:          mainnetMevboostRelayListUris,
 					ContainerTag:       "tag",
 					JWTSecretPath:      filepath.Join(generationPath, "jwtsecret"),
 				}

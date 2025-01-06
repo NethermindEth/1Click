@@ -1,0 +1,34 @@
+{{/* nimbus.tmpl */}}
+{{ define "validator" }}
+  validator:
+    container_name: sedge-validator-client{{if .ContainerTag}}-{{.ContainerTag}}{{end}}
+    image: ${VL_IMAGE_VERSION}
+    depends_on:
+      validator-blocker:
+        condition: service_completed_successfully
+    networks:
+      - sedge
+    ports:
+      - "{{.VlMetricsPort}}:{{.VlMetricsPort}}"
+    volumes:
+      - ${VL_DATA_DIR}:/data{{if .CustomConsensusConfigs}}{{if .CustomNetworkConfigPath}}
+      - {{.CustomNetworkConfigPath}}:/network_config/config.yml{{end}}{{end}}
+    command:
+      - --data-dir=/data
+      - --log-file=/data/logs/validator.log
+      - --log-level=${VL_LOG_LEVEL}
+      - --beacon-node={{if .Distributed}}${DV_API_URL}{{else}}${CC_API_URL}{{end}}
+      - --metrics=true
+      - --metrics-address=0.0.0.0
+      - --metrics-port={{.VlMetricsPort}}{{with .FeeRecipient}}
+      - --suggested-fee-recipient=${FEE_RECIPIENT}{{end}}{{range $flag := .VlExtraFlags}}
+      - --{{$flag}}{{end}}
+      - --graffiti=${GRAFFITI}{{if .MevBoostOnValidator}}
+      - --payload-builder=true{{end}}{{if .Distributed}}
+      - --distributed{{end}}{{if .LoggingDriver}}
+    logging:
+      driver: "{{.LoggingDriver}}"{{if eq .LoggingDriver "json-file"}}
+      options:
+        max-size: "10m"
+        max-file: "10"{{end}}{{end}}
+{{ end }}

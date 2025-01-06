@@ -56,6 +56,18 @@ func TestRewards(t *testing.T) {
 			nodeID:  big.NewInt(-3),
 			wantErr: true,
 		},
+		{
+			name:    "Invalid nodeID, Mainnet",
+			network: "mainnet",
+			nodeID:  big.NewInt(-15),
+			wantErr: true,
+		},
+		// {
+		// 	name:    "Rewards for nodeID 1, Mainnet",
+		// 	network: "mainnet",
+		// 	nodeID:  big.NewInt(1),
+		// 	wantErr: false,
+		// },
 	}
 	for _, tc := range tcs {
 		t.Run(tc.name, func(t *testing.T) {

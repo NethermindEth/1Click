@@ -91,4 +91,6 @@ const (
 	InvalidNetworkForLido              = "invalid network: Choose valid network for Lido: %v"
 	InvalidNetworkForLidoMevBoost      = "invalid network: Choose valid network for Lido with MEV-Boost: %v"
 	InvalidNetworkForLidoKeys          = "invalid network: Choose valid network for Lido Withdrawal Address: %v"
+	SetUpContainersErr                 = "error setting up containers %w"
+	RunContainersErr                   = "error running containers %w"
 )

@@ -331,11 +331,9 @@ func (m *MonitoringManager) saveServiceIP() error {
 
 // AddService adds a new service to the monitoring stack dynamically.
 func (m *MonitoringManager) AddService(service ServiceAPI) error {
-	// Check if the service already exists
-	for _, existingService := range m.services {
-		if existingService.ContainerName() == service.ContainerName() {
-			return fmt.Errorf("service %s already exists", service.ContainerName())
-		}
+	err := m.validateNewService(service)
+	if err != nil {
+		return fmt.Errorf("error validating service %s: %w", service.Name(), err)
 	}
 
 	// Add the new service to the list
@@ -344,17 +342,9 @@ func (m *MonitoringManager) AddService(service ServiceAPI) error {
 	// Get the new service's environment variables
 	dotEnv := service.DotEnv()
 
-	// Initialize the new service
-	if err := service.Init(types.ServiceOptions{
-		Stack:  m.stack,
-		Dotenv: dotEnv,
-	}); err != nil {
-		return fmt.Errorf("failed to initialize service %s: %w", service.Name(), err)
-	}
-
-	// Setup the new service
-	if err := service.Setup(dotEnv); err != nil {
-		return fmt.Errorf("failed to setup service %s: %w", service.Name(), err)
+	err = m.setupNewService(service, dotEnv)
+	if err != nil {
+		return fmt.Errorf("failed to update .env file: %w", err)
 	}
 
 	// Update the .env file in the stack
@@ -380,22 +370,62 @@ func (m *MonitoringManager) AddService(service ServiceAPI) error {
 		return fmt.Errorf("failed to save service IP: %w", err)
 	}
 
+	monitoringTarget, labels, err := m.makeTarget(service)
+	if err != nil {
+		return fmt.Errorf("error making target of service %s: %w", service.Name(), err)
+	}
+	// Add this new service as a target to the monitoring manager
+	if err := m.AddTarget(monitoringTarget, labels, SedgeNetworkName); err != nil {
+		return fmt.Errorf("failed to add target for service %s: %w", service.Name(), err)
+	}
+
+	return nil
+}
+
+func (m *MonitoringManager) validateNewService(service ServiceAPI) error {
+	// Check if the service already exists
+	for _, existingService := range m.services {
+		if existingService.ContainerName() == service.ContainerName() {
+			return fmt.Errorf("service %s already exists", service.ContainerName())
+		}
+	}
+	return nil
+}
+
+func (m *MonitoringManager) setupNewService(service ServiceAPI, dotEnv map[string]string) error {
+	// Initialize the new service
+	if err := service.Init(types.ServiceOptions{
+		Stack:  m.stack,
+		Dotenv: dotEnv,
+	}); err != nil {
+		return fmt.Errorf("failed to initialize service %s: %w", service.Name(), err)
+	}
+
+	// Setup the new service
+	if err := service.Setup(dotEnv); err != nil {
+		return fmt.Errorf("failed to setup service %s: %w", service.Name(), err)
+	}
+	return nil
+}
+
+func (m *MonitoringManager) makeTarget(service ServiceAPI) (types.MonitoringTarget, map[string]string, error) {
+	var monitoringTarget types.MonitoringTarget
 	// Split the service's Endpoint into host and port
 	endpoint := service.Endpoint()
 	endpoint = strings.TrimPrefix(endpoint, "http://")
 	endpoint = strings.TrimPrefix(endpoint, "https://")
 	_, portStr, err := net.SplitHostPort(endpoint)
 	if err != nil {
-		return fmt.Errorf("invalid service endpoint %s: %w", endpoint, err)
+		return monitoringTarget, nil, fmt.Errorf("invalid service endpoint %s: %w", endpoint, err)
 	}
 
 	// Convert port to uint16
 	port64, err := strconv.ParseUint(portStr, 10, 16)
 	if err != nil {
-		return fmt.Errorf("invalid port in service endpoint %s: %w", portStr, err)
+		return monitoringTarget, nil, fmt.Errorf("invalid port in service endpoint %s: %w", portStr, err)
 	}
 	// Set service as target
-	monitoringTarget := types.MonitoringTarget{
+	monitoringTarget = types.MonitoringTarget{
 		Host: service.ContainerName(),
 		Port: uint16(port64),
 		Path: "/metrics",
@@ -404,13 +434,7 @@ func (m *MonitoringManager) AddService(service ServiceAPI) error {
 	labels := map[string]string{
 		InstanceIDLabel: service.ContainerName(),
 	}
-
-	// Add this new service as a target to the monitoring manager
-	if err := m.AddTarget(monitoringTarget, labels, SedgeNetworkName); err != nil {
-		return fmt.Errorf("failed to add target for service %s: %w", service.Name(), err)
-	}
-
-	return nil
+	return monitoringTarget, labels, nil
 }
 
 // Helper method to update the .env file

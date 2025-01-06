@@ -1,0 +1,168 @@
+---
+sidebar_position: 10
+id: lido-exporter
+---
+
+# Lido Exporter
+
+The **Lido Exporter** is an independent utility container designed to export metrics from Lido's Community Staking Module (CSM) smart contracts to Prometheus. It is included in Sedge’s Docker Compose stack but can be used in any other stack related to Lido nodes. The exporter is highly flexible and can integrate with external monitoring setups, making it ideal for DevOps pipelines that require insight into Lido’s validator and node operator performance.
+
+## Features of the Lido Exporter
+
+- **Real-Time Smart Contract Event Tracking**: Subscribes to Lido CSM smart contract events and converts them into Prometheus metrics. These metrics track critical node operations like penalties, exit requests, and bond status.
+- **Customizable Scraping**: Allows users to define how frequently metrics are collected using the `-scrape-time` flag or environment variable (default: 30 seconds).
+- **Seamless Integration with Prometheus**: Provides a `/metrics` endpoint that is compatible with Prometheus for collecting, querying, and alerting based on the exported Lido data.
+- **Versatile Configuration**: The Lido Exporter can be configured through environment variables or command-line flags, making it adaptable to different deployment environments.
+
+## Exportable Metrics
+
+The Lido Exporter collects and exports a comprehensive set of metrics related to Lido CSM operations. These metrics provide valuable insights into validator status, penalties, bonds, exit requests, and rewards. The metrics are labeled by **Node Operator ID** and **network**.
+
+### Key Metrics:
+
+1. **Node Operator Metrics**:
+    - `nodeOperatorID`: The ID of the node operator.
+    - `nodeOperatorManagerAddress`: The manager address of the node operator.
+    - `nodeOperatorRewardAddress`: The reward address of the node operator.
+2. **Keys Metrics**:
+    - `keysStuckValidatorsCount`: Number of stuck validators.
+    - `keysRefundedValidatorsCount`: Number of refunded validators.
+    - `keysExitedValidatorsCount`: Number of validators that exited.
+    - `keysDepositedValidatorsCount`: Number of validators deposited.
+    - `keysDepositableValidatorsCount`: Number of depositable validators.
+    - `addedKeysCount`: Number of keys added.
+    - `withdrawnKeysCount`: Number of keys withdrawn.
+    - `vettedKeysCount`: Number of vetted keys.
+    - `enqueuedKeysCount`: Number of enqueued keys.
+3. **Penalties Metrics**:
+    - `penaltiesTotal`: Total penalties by type (e.g., **EL rewards stealing**, **initial slashing**, **withdrawal**).
+4. **Exit Requests Metrics**:
+    - `exitRequestsTotal`: Total number of exit requests by node operator and network.
+5. **Bond Metrics**:
+    - `bondCurrent`: The current bond amount for the node operator.
+    - `bondRequired`: The required bond amount.
+    - `bondExcess`: Excess bond amount.
+    - `bondMissed`: Missed bond amount.
+6. **Rewards Metrics**:
+    - `nonClaimedRewards`: The total amount of rewards that have not yet been claimed.
+
+### Accessing Metrics:
+
+All metrics are exposed via Prometheus at the `/metrics` endpoint, typically available at `http://localhost:8080/metrics`. These metrics can be queried for real-time monitoring or integrated into custom dashboards and alerting solutions.
+
+### Configuration Options
+
+The **Lido Exporter** offers flexible configuration through both **Environment Variables** and **Command-Line Flags**. These options control key aspects of the exporter, such as which Node Operator to monitor, network selection, and how frequently metrics are collected.
+
+You can configure the Lido Exporter by either:
+
+- Setting **Environment Variables**.
+- Using **Command-Line Flags**.
+
+### Configuration Settings Table
+
+The table below outlines the configuration options available for the Lido Exporter, indicating whether they are required or optional, and providing their environment variable and flag equivalents:
+
+| Setting | Description | Required? | Environment Variable | Command-Line Flag |
+| --- | --- | --- | --- | --- |
+| **Node Operator ID** | The ID of the Lido Node Operator to monitor. This is required for metric collection unless the reward address is provided. | **Required** (if `reward-address` not provided) | `LIDO_EXPORTER_NODE_OPERATOR_ID` | `--node-operator-id` |
+| **Reward Address** | The reward address of the Node Operator. Used to calculate the Node Operator ID if not explicitly set. | **Optional** (required if `node-operator-id` is not provided) | `LIDO_EXPORTER_REWARD_ADDRESS` | `--reward-address` |
+| **Network** | Specifies the target network for monitoring (e.g., `holesky`, `mainnet`). | **Optional** (Default: `holesky`) | `LIDO_EXPORTER_NETWORK` | `--network` |
+| **RPC Endpoints** | A comma-separated list of Ethereum HTTP RPC endpoints for connecting to the Ethereum network. | **Optional** | `LIDO_EXPORTER_RPC_ENDPOINTS` | `--rpc-endpoints` |
+| **WebSocket Endpoints** | A comma-separated list of Ethereum WebSocket RPC endpoints for subscribing to events. | **Optional** | `LIDO_EXPORTER_WS_ENDPOINTS` | `--ws-endpoints` |
+| **Port** | The port on which Prometheus metrics are exposed. Default: `8080`. | **Optional** (Default: `8080`) | `LIDO_EXPORTER_PORT` | `--port` |
+| **Scrape Time** | The interval at which metrics are collected. Values should be in `10s`, `1m`, `1h`, etc. Default: `30s`. | **Optional** (Default: `30s`) | `LIDO_EXPORTER_SCRAPE_TIME` | `--scrape-time` |
+| **Log Level** | Sets the verbosity level of logs (`panic`, `fatal`, `error`, `warn`, `info`, `debug`, `trace`). Default: `info`. | **Optional** (Default: `info`) | `LIDO_EXPORTER_LOG_LEVEL` | `--log-level` |
+
+## Running the Lido Exporter
+
+The Lido Exporter can be run in two main ways:
+
+### 1. **Running with Docker**
+
+You can easily run the Lido Exporter using Docker. There is a published Docker image available, which eliminates the need to build the image yourself.
+
+- **Step 1**: Pull the Docker image:
+
+    ```bash
+    docker pull nethermindeth/lido-exporter:latest
+    ```
+
+- **Step 2**: Run the Docker container with the necessary environment variables:
+
+    ```bash
+    docker run -d -p 8080:8080 \
+      -e LIDO_EXPORTER_NODE_OPERATOR_ID=<your_node_operator_id> \
+      -e LIDO_EXPORTER_NETWORK=<network_name> \
+      nethermindeth/lido-exporter:latest
+    ```
+
+    - The container listens on port `8080` by default, but you can change this using the `LIDO_EXPORTER_PORT` environment variable.
+    - The metrics will be available at `http://localhost:8080/metrics`.
+
+    An example with more optional flags is given below:
+
+    ```bash
+    docker run -d -p 9090:9090 \
+      -e LIDO_EXPORTER_NODE_OPERATOR_ID=12345 \
+      -e LIDO_EXPORTER_NETWORK=mainnet \
+      -e LIDO_EXPORTER_RPC_ENDPOINTS=https://mainnet.infura.io/v3/YOUR_INFURA_KEY \
+      -e LIDO_EXPORTER_WS_ENDPOINTS=wss://mainnet.infura.io/ws/v3/YOUR_INFURA_KEY \
+      -e LIDO_EXPORTER_PORT=9090 \
+      -e LIDO_EXPORTER_SCRAPE_TIME=15s \
+      -e LIDO_EXPORTER_LOG_LEVEL=debug \
+      nethermindeth/lido-exporter:latest
+    ```
+
+### 2. **Running as a CLI Application**
+
+You can also run the exporter as a standalone CLI tool:
+
+- **Step 1**: Build the application:
+
+    ```bash
+    cd cmd/lido-exporter
+    go build -o lido-exporter main.go
+    ```
+
+- **Step 2**: Run the application with the appropriate flags:
+
+    ```bash
+    ./lido-exporter --node-operator-id <your_node_operator_id> --network <network_name>
+    ```
+
+    An example with more optional flags is given below:
+
+    ```bash
+    ./lido-exporter --node-operator-id 12345 \
+                    --network mainnet \
+                    --rpc-endpoints https://mainnet.infura.io/v3/YOUR_INFURA_KEY \
+                    --ws-endpoints wss://mainnet.infura.io/ws/v3/YOUR_INFURA_KEY \
+                    --port 9090 \
+                    --scrape-time 15s \
+                    --log-level debug
+    ```
+
+### Configuration Precedence
+
+If both **Environment Variables** and **Command-Line Flags** are set for the same setting, the **Environment Variables** will take precedence. For example, if you set `LIDO_EXPORTER_PORT=9090` as an environment variable but also pass `--port 8080` on the command line, the exporter will use **9090**.
+
+## Using the Lido Exporter in Other DevOps Stacks
+
+The Lido Exporter is highly versatile and can be integrated into other DevOps stacks that involve Lido node operations. Its Prometheus-compatible `/metrics` endpoint allows it to export data to any stack that supports Prometheus or other monitoring tools like Grafana, making it easy to build dashboards or set up alerting for:
+
+- Monitoring validator performance in real-time.
+- Tracking penalties, exit requests, or bond statuses.
+- Integrating with other services such as Prometheus Alertmanager for critical notifications.
+
+This allows operators or DevOps teams to leverage Lido Exporter’s metrics in different environments outside of Sedge, providing flexibility for custom tooling, monitoring, and performance analysis.
+
+### Integration Possibilities
+
+1. **Standalone Use in Non-Sedge Stacks**:
+    - If you’re managing Lido nodes outside of Sedge, you can deploy the Lido Exporter as a Docker container or CLI tool within your existing stack. Simply point the exporter to your Ethereum RPC/WebSocket endpoints and the desired Lido network (e.g., Holesky, Mainnet).
+    - The metrics will be exposed in Prometheus format, which can be consumed by external monitoring tools such as **Grafana**, **Prometheus**, or even **Kubernetes** Prometheus Operator.
+2. **Kubernetes Integration**:
+    - The exporter can easily be deployed in a Kubernetes environment alongside Prometheus and Grafana. It can act as a source for Prometheus metrics and integrate seamlessly with Grafana dashboards for visualizing Lido node performance.
+3. **Custom Monitoring and Alerting**:
+    - You can also use the Lido Exporter to power custom alerting systems. For example, integrate it with **Grafana’s OnCall** module or custom alerting pipelines (e.g., using **PagerDuty**, **Slack**, or **OpsGenie**).

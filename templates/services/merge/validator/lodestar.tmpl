@@ -21,7 +21,7 @@
       - --dataDir=/data
       - --logFile=/data/logs/validator.log
       - --logFileLevel=${VL_LOG_LEVEL}
-      - --server=${CC_API_URL}
+      - --server={{if .Distributed}}${DV_API_URL}{{else}}${CC_API_URL}{{end}}
       - --metrics=true
       - --metrics.address=0.0.0.0
       - --metrics.port={{.VlMetricsPort}}{{with .FeeRecipient}}

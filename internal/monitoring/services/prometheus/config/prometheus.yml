@@ -1,2 +1,12 @@
 global:
   scrape_interval: 15s
+  evaluation_interval: 10s
+
+rule_files:
+  - ./rules/*.yml
+
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets:
+          - alertmanager:9093

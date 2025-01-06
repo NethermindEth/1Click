@@ -1,0 +1,10 @@
+{{/* opgeth.tmpl */}}
+{{ define "opexecution" }}
+# --- Layer 2 - Optimism Execution Node - configuration ---
+EXECUTION_OP_API_URL={{.ExecutionOPApiURL}}
+EC_OP_IMAGE_VERSION={{.ElOpImage}}
+EC_OP_DATA_DIR={{.ElDataDir}}-op
+EC_OP_JWT_SECRET_PATH={{.JWTOPSecretPath}}
+EC_OP_RPC_URL=http://execution-l2:{{.ElOPAuthPort}}
+OP_SEQUENCER_HTTP={{.OpSequencerHttp}}
+{{ end }}

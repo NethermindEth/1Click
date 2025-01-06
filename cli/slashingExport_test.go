@@ -195,6 +195,18 @@ func TestSlashingExport_Params(t *testing.T) {
 				Out:             filepath.Join(outDir, "file.json"),
 			},
 		},
+		{
+			name: "nimbus flag",
+			args: []string{"nimbus"},
+			actionOptions: actions.SlashingExportOptions{
+				ValidatorClient: "nimbus",
+				Network:         "mainnet",
+				StopValidator:   false,
+				StartValidator:  false,
+				GenerationPath:  configs.DefaultAbsSedgeDataPath,
+				Out:             filepath.Join(configs.DefaultAbsSedgeDataPath, "slashing_protection.json"),
+			},
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

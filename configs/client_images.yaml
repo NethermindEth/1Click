@@ -1,43 +1,63 @@
 execution:
   geth:
     name: ethereum/client-go
-    version: v1.14.8
+    version: v1.14.12
   besu:
     name: hyperledger/besu
-    version: 24.8.0
+    version: 24.12.2
   nethermind:
     name: nethermind/nethermind
-    version: 1.28.0
+    version: 1.30.3
   erigon:
-    name: thorax/erigon
-    version: v2.60.6
+    name: erigontech/erigon
+    version: v2.61.0
 consensus:
   lighthouse:
     name: sigp/lighthouse
-    version: v5.3.0
+    version: v6.0.1
   lodestar:
     name: chainsafe/lodestar
-    version: v1.21.0
+    version: v1.24.0
   teku:
     name: consensys/teku
-    version: 24.8.0
+    version: 24.12.1
   prysm:
     name: gcr.io/prysmaticlabs/prysm/beacon-chain
-    version: v5.1.0
+    version: v5.2.0
+  nimbus:
+    name: statusim/nimbus-eth2
+    version: multiarch-v24.10.0
 validator:
   lighthouse:
     name: sigp/lighthouse
-    version: v5.3.0
+    version: v6.0.1
   lodestar:
     name: chainsafe/lodestar
-    version: v1.21.0
+    version: v1.24.0
   teku:
     name: consensys/teku
-    version: 24.8.0
+    version: 24.12.1
   prysm:
     name: gcr.io/prysmaticlabs/prysm/validator
-    version: v5.1.0
+    version: v5.2.0
+  nimbus:
+    name: statusim/nimbus-validator-client
+    version: multiarch-v24.10.0
+distributed:
+  charon:
+    name: ghcr.io/obolnetwork/charon
+    version: v5.2.0
 optimism:
-  optimism:
+  opnode:
     name: us-docker.pkg.dev/oplabs-tools-artifacts/images/op-node
-    version: v1.9.1
+    version: v1.9.4
+opexecution:
+  opgeth:
+    name: us-docker.pkg.dev/oplabs-tools-artifacts/images/op-geth
+    version: v1.101411.0
+  opnethermind:
+    name: nethermind/nethermind
+    version: 1.29.1
+  opreth:
+    name: ghcr.io/paradigmxyz/op-reth
+    version: v1.1.0

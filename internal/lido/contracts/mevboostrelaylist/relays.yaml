@@ -19,18 +19,23 @@ mainnet:
     Operator: "Flashbots"
     IsMandatory: true
     Description: "Flashbots Relay"
-  - Uri: "https://0xb3ee7afcf27f1f1259ac1787876318c6584ee353097a50ed84f51a1f21a323b3736f271a895c7ce918c038e4265918be@relay.edennetwork.io"
-    Operator: "Eden Network"
-    IsMandatory: true
-    Description: "Eden Network Relay"
-  - Uri: "https://0x98650451ba02064f7b000f5768cf0cf4d4e492317d82871bdc87ef841a0743f69f0f1eea11168503240ac35d101c9135@mainnet-relay.securerpc.com/"
-    Operator: "Manifold Finance"
-    IsMandatory: false
-    Description: "Manifold SecureRPC Relay"
   - Uri: "https://0xa1559ace749633b997cb3fdacffb890aeebdb0f5a3b6aaa7eeeaf1a38af0a8fe88b9e4b1f61f236d2e64d95733327a62@relay.ultrasound.money"
     Operator: "Ultra Sound"
     IsMandatory: true
     Description: "Ultra Sound Relay"
+  - Uri: "https://0x98650451ba02064f7b000f5768cf0cf4d4e492317d82871bdc87ef841a0743f69f0f1eea11168503240ac35d101c9135@mainnet-relay.securerpc.com/"
+    Operator: "Manifold Finance"
+    IsMandatory: false
+    Description: "Manifold SecureRPC Relay"
+  - Uri: "https://0x8c4ed5e24fe5c6ae21018437bde147693f68cda427cd1122cf20819c30eda7ed74f72dece09bb313f2a1855595ab677d@global.titanrelay.xyz"
+    Operator: "Gattaca" 
+    IsMandatory: false 
+    Description: "Titan Relay Global (non-filtering)" 
+  - Uri: "https://0x8c4ed5e24fe5c6ae21018437bde147693f68cda427cd1122cf20819c30eda7ed74f72dece09bb313f2a1855595ab677d@regional.titanrelay.xyz" 
+    Operator: "Gattaca" 
+    IsMandatory: false 
+    Description: "Titan Relay Regional (filtering)"
+
 
 holesky:
   - Uri: "https://0xb1559beef7b5ba3127485bbbb090362d9f497ba64e177ee2c8e7db74746306efad687f2cf8574e38d70067d40ef136dc@relay-stag.ultrasound.money"

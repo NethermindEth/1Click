@@ -1,0 +1,57 @@
+[
+ {
+  "pubkey": "8305208fe7e85093f51c9b1703bde1bf86bacbabba2b13fb03578efa0e3f38bb9f921d1b6160ae1d90894ee897b829b7",
+  "withdrawal_credentials": "0100000000000000000000007ce7390c41ce3416c4a0a297761c71763d89ca3b",
+  "amount": 32000000000,
+  "signature": "8e870a48e1e5c61b8650d17537ddd7dc01a017f76c97461fd1956de819ef21af318d9a5eee56cbbdee0b8f8e30ae74ab047d0220de1e7cbb25e159614bc64b76195d1193ed4aeacdd8dd70eb40d62c161e933c9fcef49544c406631fb2063eb2",
+  "deposit_message_root": "7de8922c584ee15b6cbe971dba5fdb6a54910c012624a712bbdeb46e9453cc62",
+  "deposit_data_root": "5506b2520a86668358d7ab60cbdcefa55e1e74d2e88209b13d5d62dda9e33208",
+  "fork_version": "01017000",
+  "network_name": "holesky",
+  "deposit_cli_version": "2.7.0"
+ },
+ {
+  "pubkey": "9520c02ebab3efaec45d0fe7f8b08e532ffe2e03f59b417f5d33fdf721888d116674814c3ddb1972c5ec6588c2506986",
+  "withdrawal_credentials": "0100000000000000000000007ce7390c41ce3416c4a0a297761c71763d89ca3b",
+  "amount": 32000000000,
+  "signature": "a13a9419fd3a6efd1fed6fe2a9b09475d8bda5df141c2e7ca44aa659c21a042aea076a6e571b96e7efb2fc504ac7743301dbd6ad28df04339eea2dd6b16de5a8534df13e1d573e0695d3071de731737ef7afd9520ad14d213347032b483f1d68",
+  "deposit_message_root": "b0d8277db9b4072039a60d641bfca99a5b4e163d163d90f7ed0fc0429c75b7db",
+  "deposit_data_root": "e73f77a8388bbb9d87eda265d6ae7868e1ea808f200b8cbca1a39fd17b9cb363",
+  "fork_version": "01017000",
+  "network_name": "holesky",
+  "deposit_cli_version": "2.7.0"
+ },
+ {
+  "pubkey": "a54440e320af34dfb3963175be103ec951f9b3f0d4aa82fd5eef0a42fdc216af8249297d213e23e91449d539d5726e95",
+  "withdrawal_credentials": "0100000000000000000000007ce7390c41ce3416c4a0a297761c71763d89ca3b",
+  "amount": 32000000000,
+  "signature": "a8154d7b3daece140f22ca5a66371bac2e0329a9dbb1deda24108cdb9d4b04e47f4696adc5889dae22be6145a28256fc0d587bf3a6a066edd4de109e51a8941b8b9f6ee61f84891bc26ee3693323b294781de14760674f023af21184b335b699",
+  "deposit_message_root": "9339492e6f4ad30b191aa5c4c495cd5fb3835357036dfad002fba96cef5b2743",
+  "deposit_data_root": "68febc17db64a1d4c41ada21c257542a51bb9df63db5bfefb63557a39d5048fa",
+  "fork_version": "01017000",
+  "network_name": "holesky",
+  "deposit_cli_version": "2.7.0"
+ },
+ {
+  "pubkey": "a92a6349443cb28db93056ae73362791cccb854da50c6acf7ab23ab4b6a6ff8fe479ad85f2334b40d37b3fc2594ab2f5",
+  "withdrawal_credentials": "0100000000000000000000007ce7390c41ce3416c4a0a297761c71763d89ca3b",
+  "amount": 32000000000,
+  "signature": "b631d3e0d2cfedff007ac5d5a7eb294de60d0e75405f5d612fdee9a3da5a83ee2ee40faeae44d775e96a99a0f3dbbc9f1023f2b41ef32a2201e2a6b46253849e3c224dbdec8d80ed89ffc7f1bd82154ef665604231c86312ec8319f95156a837",
+  "deposit_message_root": "ecfa84f6bf752a54438540e280a16b551b48c092108e73526a9289f89ece5aa6",
+  "deposit_data_root": "beec5ed130b83b0ab3d07d994e3b9f6155703ccd1ee825d877260cfdf117266b",
+  "fork_version": "01017000",
+  "network_name": "holesky",
+  "deposit_cli_version": "2.7.0"
+ },
+ {
+  "pubkey": "b817ffd0770913f31a0c2ca37bf8777b5838f3871fc804558c6cbebb29d610d5d2c64b5bcd361584a7e6ba30795ac6c4",
+  "withdrawal_credentials": "0100000000000000000000007ce7390c41ce3416c4a0a297761c71763d89ca3b",
+  "amount": 32000000000,
+  "signature": "996be98ac1ab42aa2594fb5345578c6ee01d9d11facb61c623119b6b2bf3ea88bd73fcc7a386c0c712d30493c7d2cc7a09471a360d8186a65ca072ad3419fe44bfa43b5a179c43e050839d1681556273001bec3ec6829e6dad87975cf36f31fe",
+  "deposit_message_root": "eeae8e9cda1c60073cdb182894a934f644a9c9a3f1d14f6be579232214126af2",
+  "deposit_data_root": "0a5868d133b29a19e130422532badba536fe5820a48b5a35702bef84f7cce742",
+  "fork_version": "01017000",
+  "network_name": "holesky",
+  "deposit_cli_version": "2.7.0"
+ }
+]

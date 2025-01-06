@@ -16,6 +16,7 @@ limitations under the License.
 package actions
 
 import (
+	"fmt"
 	"path/filepath"
 
 	"github.com/NethermindEth/sedge/configs"
@@ -31,33 +32,30 @@ type SetupContainersOptions struct {
 
 func (s *sedgeActions) SetupContainers(options SetupContainersOptions) error {
 	log.Info("Setting up containers")
-	buildCmd := s.commandRunner.BuildDockerComposeBuildCMD(commands.DockerComposeBuildOptions{
+	err := s.composeManager.Build(commands.DockerComposeBuildOptions{
 		Path:     filepath.Join(options.GenerationPath, configs.DefaultDockerComposeScriptName),
 		Services: options.Services,
 	})
-	log.Infof(configs.RunningCommand, buildCmd.Cmd)
-	if _, _, err := s.commandRunner.RunCMD(buildCmd); err != nil {
-		return err
+	if err != nil {
+		return fmt.Errorf(configs.SetUpContainersErr, err)
 	}
 	if !options.SkipPull {
-		pullCmd := s.commandRunner.BuildDockerComposePullCMD(commands.DockerComposePullOptions{
+		err := s.composeManager.Pull(commands.DockerComposePullOptions{
 			Path:     filepath.Join(options.GenerationPath, configs.DefaultDockerComposeScriptName),
 			Services: options.Services,
 		})
-		log.Infof(configs.RunningCommand, pullCmd.Cmd)
-		if _, _, err := s.commandRunner.RunCMD(pullCmd); err != nil {
-			return err
+		if err != nil {
+			return fmt.Errorf(configs.SetUpContainersErr, err)
 		}
 	} else {
 		log.Warn("Skipping 'docker compose pull' step")
 	}
-	createCmd := s.commandRunner.BuildDockerComposeCreateCMD(commands.DockerComposeCreateOptions{
+	err = s.composeManager.Create(commands.DockerComposeCreateOptions{
 		Path:     filepath.Join(options.GenerationPath, configs.DefaultDockerComposeScriptName),
 		Services: options.Services,
 	})
-	log.Infof(configs.RunningCommand, createCmd.Cmd)
-	if _, _, err := s.commandRunner.RunCMD(createCmd); err != nil {
-		return err
+	if err != nil {
+		return fmt.Errorf(configs.SetUpContainersErr, err)
 	}
 	return nil
 }

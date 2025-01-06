@@ -66,7 +66,7 @@ func checkMonitoringStackNotInstalled(t *testing.T) {
 // checkMonitoringStackContainers checks that the monitoring stack containers are running
 func checkMonitoringStackContainers(t *testing.T, containerNames ...string) {
 	t.Logf("Checking monitoring stack containers")
-	containerNames = append(containerNames, "sedge_grafana", "sedge_prometheus", "sedge_node_exporter")
+	containerNames = append(containerNames, "sedge_grafana", "sedge_prometheus", "sedge_node_exporter", "sedge_alertmanager")
 	checkContainerRunning(t, containerNames...)
 }
 
@@ -168,7 +168,7 @@ func checkGrafanaHealth(t *testing.T) {
 // checkMonitoringStackContainersNotRunning checks that the monitoring stack containers are not running
 func checkMonitoringStackContainersNotRunning(t *testing.T, containerNames ...string) {
 	t.Logf("Checking monitoring stack containers are not running")
-	containerNames = append(containerNames, "sedge_grafana", "sedge_prometheus", "sedge_node_exporter")
+	containerNames = append(containerNames, "sedge_grafana", "sedge_prometheus", "sedge_node_exporter", "sedge_alertmanager")
 	checkContainerNotExisting(t, containerNames...)
 }
 
@@ -189,5 +189,42 @@ func checkContainerNotExisting(t *testing.T, containerNames ...string) {
 		t.Logf("Checking %s container is not existing", containerName)
 		_, err := dockerServiceManager.ContainerStatus(containerName)
 		assert.Error(t, err)
+	}
+}
+
+// checkMonitoringStackDir checks that the monitoring stack directory exists and contains the docker-compose file
+func checkPrometheusDir(t *testing.T) {
+	t.Logf("Checking prometheus directory")
+	// Check monitoring folder exists
+	dataDir, err := dataDirPath()
+	if err != nil {
+		t.Fatal(err)
+	}
+	prometheusDir := filepath.Join(dataDir, "monitoring", "prometheus")
+	assert.DirExists(t, prometheusDir)
+
+	assert.DirExists(t, filepath.Join(prometheusDir, "rules"))
+	// Check monitoring docker-compose file exists
+	assert.FileExists(t, filepath.Join(prometheusDir, "alertmanager", "alertmanager.yml"))
+}
+
+// checkContainerRunning checks that the given containers are running
+func checkContainerNotRunning(t *testing.T, containerNames ...string) {
+	cli, err := client.NewClientWithOpts(
+		client.FromEnv,
+		client.WithAPIVersionNegotiation(),
+	)
+	if err != nil {
+		t.Fatalf("Failed to create Docker client: %v", err)
+	}
+	defer cli.Close()
+
+	dockerServiceManager := services.NewDockerServiceManager(cli)
+
+	for _, containerName := range containerNames {
+		t.Logf("Checking %s container is not running", containerName)
+		isRunning, err := dockerServiceManager.IsRunning(containerName)
+		require.NoError(t, err)
+		assert.False(t, isRunning, "%s container should not be running", containerName)
 	}
 }

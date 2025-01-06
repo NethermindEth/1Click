@@ -1,0 +1,10 @@
+{{/* charon.tmpl */}}
+{{ define "distributedValidator" }}
+# --- Charon - distributed validator - configuration ---
+DV_IMAGE_VERSION={{.DvImage}}
+DV_LOG_LEVEL=info
+DV_LOG_FORMAT=console
+DV_INSTANCE_NAME=charon
+DV_DATA_DIR={{.DvDataDir}}
+DV_API_URL={{.DistributedValidatorApiUrl}}
+{{ end }}

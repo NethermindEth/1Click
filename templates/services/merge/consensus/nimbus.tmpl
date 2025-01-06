@@ -1,0 +1,84 @@
+{{/* nimbus.tmpl */}}
+{{ define "consensus" }}{{if or .ClCheckpointSyncUrl .CheckpointSyncUrl}}
+  consensus-sync:
+    user: "root:root"
+    stop_grace_period: 30s
+    container_name: sedge-consensus-trusted-sync{{if .ContainerTag}}-{{.ContainerTag}}{{end}}
+    image: ${CC_IMAGE_VERSION}
+    networks:
+      - sedge
+    volumes:
+      - ${CC_DATA_DIR}:/var/lib/nimbus
+      - ${CC_JWT_SECRET_PATH}:/tmp/jwt/jwtsecret{{if .CustomConsensusConfigs}}{{if .CustomNetworkConfigPath}}
+      - {{.CustomNetworkConfigPath}}:/network_config/config.yaml{{end}}{{if .CustomGenesisPath}}
+      - {{.CustomGenesisPath}}:/network_config/genesis.ssz{{end}}{{if .CustomDeployBlockPath}}
+      - {{.CustomDeployBlockPath}}:/network_config/deploy_block.txt{{end}}{{end}}
+    command:
+      - trustedNodeSync
+      - --network:{{if .SplittedNetwork}}${CL_NETWORK}{{else}}${NETWORK}{{end}}
+      - --data-dir=/var/lib/nimbus
+      - --trusted-node-url={{if .CheckpointSyncUrl}}{{ .CheckpointSyncUrl }}{{else}}${CHECKPOINT_SYNC_URL}{{end}}{{if .LoggingDriver}}
+    logging:
+      driver: "{{.LoggingDriver}}"{{if eq .LoggingDriver "json-file"}}
+      options:
+        max-size: "10m"
+        max-file: "10"{{end}}{{end}}{{end}}
+
+  consensus:
+    user: "root:root"
+    stop_grace_period: 30s
+    container_name: sedge-consensus-client{{if .ContainerTag}}-{{.ContainerTag}}{{end}}
+    restart: unless-stopped
+    image: ${CC_IMAGE_VERSION}{{if or .ClCheckpointSyncUrl .CheckpointSyncUrl .Mev}}
+    depends_on:{{if .Mev}}
+      mev-boost:
+        condition: service_started{{end}}{{if or .ClCheckpointSyncUrl .CheckpointSyncUrl}}
+      consensus-sync:
+        condition: service_completed_successfully{{end}}{{end}}
+    networks:
+      - sedge
+    volumes:
+      - ${CC_DATA_DIR}:/var/lib/nimbus
+      - ${CC_JWT_SECRET_PATH}:/tmp/jwt/jwtsecret{{if .CustomConsensusConfigs}}{{if .CustomNetworkConfigPath}}
+      - {{.CustomNetworkConfigPath}}:/network_config/config.yaml{{end}}{{if .CustomGenesisPath}}
+      - {{.CustomGenesisPath}}:/network_config/genesis.ssz{{end}}{{if .CustomDeployBlockPath}}
+      - {{.CustomDeployBlockPath}}:/network_config/deploy_block.txt{{end}}{{end}}
+    ports:
+      - "{{.ClDiscoveryPort}}:{{.ClDiscoveryPort}}/tcp"
+      - "{{.ClDiscoveryPort}}:{{.ClDiscoveryPort}}/udp"
+      - "{{.ClMetricsPort}}:{{.ClMetricsPort}}/tcp"{{if .MapAllPorts}}
+      - "{{.ClApiPort}}:{{.ClApiPort}}"{{end}}
+    expose:
+      - {{.ClApiPort}}
+    command:
+      - --non-interactive=true
+      - --network={{if .SplittedNetwork}}${CL_NETWORK}{{else}}${NETWORK}{{end}}
+      - --max-peers=${CC_PEER_COUNT}
+      - --data-dir=/var/lib/nimbus
+      - --web3-url=${EC_AUTH_URL}{{range $url := .FallbackELUrls}} --web3-url={{$url}}{{end}}
+      - --bootstrap-node={{.CCBootnodes}}
+      - --udp-port={{.ClDiscoveryPort}}
+      - --tcp-port={{.ClDiscoveryPort}}
+      - --listen-address=0.0.0.0
+      - --enr-auto-update=false
+      - --subscribe-all-subnets
+      - --rest
+      - --rest-port={{.ClApiPort}}
+      - --rest-address=0.0.0.0{{if .FeeRecipient}}
+      - --suggested-fee-recipient=${CC_FEE_RECIPIENT}{{end}}
+      - --metrics
+      - --metrics-port={{.ClMetricsPort}}
+      - --metrics-address=0.0.0.0
+      - --doppelganger-detection=off
+      - --jwt-secret=/tmp/jwt/jwtsecret
+      - --log-level=${CC_LOG_LEVEL}
+      - --dump:on{{range $flag := .ClExtraFlags}}
+      - --{{$flag}}{{end}}{{if .MevBoostEndpoint}}
+      - --payload-builder
+      - --payload-builder-url={{.MevBoostEndpoint}}{{end}}{{if .LoggingDriver}}
+    logging:
+      driver: "{{.LoggingDriver}}"{{if eq .LoggingDriver "json-file"}}
+      options:
+        max-size: "10m"
+        max-file: "10"{{end}}{{end}}
+{{ end }}

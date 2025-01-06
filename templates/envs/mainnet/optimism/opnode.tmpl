@@ -1,0 +1,8 @@
+{{/* opnode.tmpl */}}
+{{ define "optimism" }}
+# --- Layer 2 - Optimism Node - configuration ---
+EC_API_URL={{.ExecutionApiURL}}
+EC_OP_JWT_SECRET_PATH={{.JWTOPSecretPath}}
+EC_OP_RPC_URL=http://execution-l2:{{.ElOPAuthPort}}
+OP_IMAGE_VERSION={{.OPImageVersion}}
+{{ end }}

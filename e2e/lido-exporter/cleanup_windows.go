@@ -19,6 +19,8 @@ limitations under the License.
 package e2e
 
 import (
+	"os"
+
 	"golang.org/x/sys/windows"
 )
 
@@ -39,5 +41,10 @@ func (e *e2eLidoExporterTestCase) Cleanup() {
 				e.T.Fatalf("error terminating process %d: %v", e.pid, err)
 			}
 		}
+	}
+
+	// Restore environment variables
+	for _, env := range e.envVars {
+		os.Unsetenv(env)
 	}
 }

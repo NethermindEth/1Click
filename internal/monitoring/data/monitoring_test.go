@@ -104,7 +104,7 @@ networks:
 			name: "success",
 			env: map[string]string{
 				"IMAGE": "myimage:latest",
-				"PORT":  "8080",
+				"PORT":  "8088",
 			},
 			mocker:  okLocker,
 			wantErr: false,

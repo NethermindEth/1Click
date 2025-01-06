@@ -16,14 +16,24 @@ limitations under the License.
 package e2e
 
 import (
+	"runtime"
 	"testing"
 
 	base "github.com/NethermindEth/sedge/e2e"
 	"github.com/stretchr/testify/assert"
 )
 
+func skipIfNotAMD64(t *testing.T) {
+	if runtime.GOARCH != "amd64" {
+		t.Skip("Skipping test on non-AMD64 architecture")
+	}
+}
+
+var grafanaOnCallContainers = []string{"engine", "celery", "redis", "oncall_setup"}
+
 // TestMonitoringStack_Init tests that the monitoring stack is not initialized if the user does not run the init-monitoring command
 func TestE2E_MonitoringStack_NotInitialized(t *testing.T) {
+	skipIfNotAMD64(t)
 	// Test context
 	var (
 		runErr error
@@ -42,7 +52,7 @@ func TestE2E_MonitoringStack_NotInitialized(t *testing.T) {
 			assert.NoError(t, runErr)
 
 			checkMonitoringStackNotInstalled(t)
-			checkMonitoringStackContainersNotRunning(t)
+			checkMonitoringStackContainersNotRunning(t, grafanaOnCallContainers...)
 		},
 	)
 	// Run test case
@@ -51,6 +61,7 @@ func TestE2E_MonitoringStack_NotInitialized(t *testing.T) {
 
 // TestMonitoringStack_Init tests the monitoring stack initialization
 func TestE2E_MonitoringStack_Init(t *testing.T) {
+	skipIfNotAMD64(t)
 	// Test context
 	var (
 		runErr error
@@ -68,7 +79,8 @@ func TestE2E_MonitoringStack_Init(t *testing.T) {
 		func(t *testing.T, dataDirPath string) {
 			assert.NoError(t, runErr)
 			checkMonitoringStackDir(t)
-			checkMonitoringStackContainers(t)
+			checkPrometheusDir(t)
+			checkMonitoringStackContainers(t, grafanaOnCallContainers...)
 			checkPrometheusTargetsUp(t, "sedge_node_exporter:9100")
 			checkGrafanaHealth(t)
 		},
@@ -78,6 +90,7 @@ func TestE2E_MonitoringStack_Init(t *testing.T) {
 }
 
 func TestE2E_MonitoringStack_NotReinstalled(t *testing.T) {
+	skipIfNotAMD64(t)
 	// Test context
 	var (
 		grafanaContainerID      string
@@ -114,6 +127,7 @@ func TestE2E_MonitoringStack_NotReinstalled(t *testing.T) {
 			assert.NoError(t, runErr)
 
 			checkMonitoringStackDir(t)
+			checkPrometheusDir(t)
 			checkMonitoringStackContainers(t)
 			checkGrafanaHealth(t)
 			newGrafanaContainerID, err := getContainerIDByName("sedge_grafana")
@@ -132,6 +146,7 @@ func TestE2E_MonitoringStack_NotReinstalled(t *testing.T) {
 }
 
 func TestE2E_MonitoringStack_Clean(t *testing.T) {
+	skipIfNotAMD64(t)
 	// Test context
 	var (
 		runErr error
@@ -155,7 +170,7 @@ func TestE2E_MonitoringStack_Clean(t *testing.T) {
 			assert.NoDirExists(t, dataDirPath)
 
 			// Check that monitoring stack containers are removed
-			checkMonitoringStackContainersNotRunning(t)
+			checkMonitoringStackContainersNotRunning(t, grafanaOnCallContainers...)
 		},
 	)
 	// Run test case
@@ -163,6 +178,7 @@ func TestE2E_MonitoringStack_Clean(t *testing.T) {
 }
 
 func TestE2E_MonitoringStack_CleanNonExistent(t *testing.T) {
+	skipIfNotAMD64(t)
 	// Test context
 	var (
 		runErr error
@@ -184,14 +200,15 @@ func TestE2E_MonitoringStack_CleanNonExistent(t *testing.T) {
 			assert.NoDirExists(t, dataDirPath)
 
 			// Check that monitoring stack containers don't exist
-			checkMonitoringStackContainersNotRunning(t)
+			checkMonitoringStackContainersNotRunning(t, grafanaOnCallContainers...)
 		},
 	)
 	// Run test case
 	e2eTest.run()
 }
 
-func TestE2E_MonitoringStack_InitLido(t *testing.T) {
+func TestE2E_MonitoringStack_InitLido_ValidID(t *testing.T) {
+	skipIfNotAMD64(t)
 	// Test context
 	var (
 		runErr error
@@ -209,6 +226,7 @@ func TestE2E_MonitoringStack_InitLido(t *testing.T) {
 		func(t *testing.T, dataDirPath string) {
 			assert.NoError(t, runErr)
 			checkMonitoringStackDir(t)
+			checkPrometheusDir(t)
 			checkMonitoringStackContainers(t, "sedge_lido_exporter")
 			checkPrometheusTargetsUp(t, "sedge_lido_exporter:8080", "sedge_node_exporter:9100")
 			checkGrafanaHealth(t)
@@ -219,6 +237,7 @@ func TestE2E_MonitoringStack_InitLido(t *testing.T) {
 }
 
 func TestE2E_MonitoringStack_CleanLido(t *testing.T) {
+	skipIfNotAMD64(t)
 	// Test context
 	var (
 		runErr error
@@ -243,6 +262,213 @@ func TestE2E_MonitoringStack_CleanLido(t *testing.T) {
 
 			// Check that monitoring stack containers are removed
 			checkMonitoringStackContainersNotRunning(t, "sedge_lido_exporter")
+		},
+	)
+	// Run test case
+	e2eTest.run()
+}
+
+func TestE2E_MonitoringStack_InitLido_InvalidAddress(t *testing.T) {
+	skipIfNotAMD64(t)
+	// Test context
+	var (
+		runErr error
+	)
+	// Build test case
+	e2eTest := newE2ESedgeTestCase(
+		t,
+		// Arrange
+		func(t *testing.T, sedgePath string) error {
+			return base.RunCommand(t, sedgePath, "sedge", "monitoring", "clean")
+		},
+		// Act
+		func(t *testing.T, binaryPath string, dataDirPath string) {
+			runErr = base.RunCommand(t, binaryPath, "sedge", "monitoring", "init", "lido", "--reward-address", "lol_what_a_reward_address")
+		},
+		// Assert
+		func(t *testing.T, dataDirPath string) {
+			assert.Error(t, runErr)
+
+			checkMonitoringStackNotInstalled(t)
+			checkMonitoringStackContainersNotRunning(t, grafanaOnCallContainers...)
+		},
+	)
+	// Run test case
+	e2eTest.run()
+}
+
+func TestE2E_MonitoringStack_InitLido_OccupiedPort(t *testing.T) {
+	skipIfNotAMD64(t)
+	// Test context
+	var (
+		runErr error
+	)
+	// Build test case
+	e2eTest := newE2ESedgeTestCase(
+		t,
+		// Arrange
+		nil,
+		// Act
+		func(t *testing.T, binaryPath string, dataDirPath string) {
+			runErr = base.RunCommand(t, binaryPath, "sedge", "monitoring", "init", "lido", "--node-operator-id", "10", "--port", "9090")
+		},
+		// Assert
+		func(t *testing.T, dataDirPath string) {
+			assert.Error(t, runErr)
+			checkContainerNotRunning(t, "sedge_lido_exporter")
+		},
+	)
+	// Run test case
+	e2eTest.run()
+}
+
+func TestE2E_MonitoringStack_InitLido(t *testing.T) {
+	skipIfNotAMD64(t)
+	// Test context
+	var (
+		runErr error
+	)
+	// Build test case
+	e2eTest := newE2ESedgeTestCase(
+		t,
+		// Arrange
+		nil,
+		// Act
+		func(t *testing.T, binaryPath string, dataDirPath string) {
+			runErr = base.RunCommand(t, binaryPath, "sedge", "monitoring", "init", "lido",
+				"--rpc-endpoints", "https://endpoints.omniatech.io/v1/eth/holesky/public,https://ethereum-holesky-rpc.publicnode.com",
+				"--ws-endpoints", "https://ethereum-holesky-rpc.publicnode.com,wss://ethereum-holesky-rpc.publicnode.com",
+				"--port", "9989",
+				"--scrape-time", "30s",
+				"--network", "holesky",
+				"--node-operator-id", "250",
+				"--reward-address", "0x22bA5CaFB5E26E6Fe51f330294209034013A5A4c",
+			)
+		},
+		// Assert
+		func(t *testing.T, dataDirPath string) {
+			assert.NoError(t, runErr)
+			checkMonitoringStackDir(t)
+			checkPrometheusDir(t)
+			checkMonitoringStackContainers(t, "sedge_lido_exporter")
+			checkPrometheusTargetsUp(t, "sedge_lido_exporter:9989", "sedge_node_exporter:9100")
+			checkGrafanaHealth(t)
+		},
+	)
+	// Run test case
+	e2eTest.run()
+}
+
+func TestE2E_MonitoringStack_InitLido_InvalidNodeID(t *testing.T) {
+	skipIfNotAMD64(t)
+	// Test context
+	var (
+		runErr error
+	)
+	// Build test case
+	e2eTest := newE2ESedgeTestCase(
+		t,
+		// Arrange
+		func(t *testing.T, sedgePath string) error {
+			return base.RunCommand(t, sedgePath, "sedge", "monitoring", "clean")
+		},
+		// Act
+		func(t *testing.T, binaryPath string, dataDirPath string) {
+			runErr = base.RunCommand(t, binaryPath, "sedge", "monitoring", "init", "lido", "--node-operator-id", "-1")
+		},
+		// Assert
+		func(t *testing.T, dataDirPath string) {
+			assert.Error(t, runErr)
+
+			checkMonitoringStackNotInstalled(t)
+			checkMonitoringStackContainersNotRunning(t, grafanaOnCallContainers...)
+		},
+	)
+	// Run test case
+	e2eTest.run()
+}
+
+func TestE2E_MonitoringStack_InitLido_InvalidNodeID_Mainnet(t *testing.T) {
+	skipIfNotAMD64(t)
+	// Test context
+	var (
+		runErr error
+	)
+	// Build test case
+	e2eTest := newE2ESedgeTestCase(
+		t,
+		// Arrange
+		func(t *testing.T, sedgePath string) error {
+			return base.RunCommand(t, sedgePath, "sedge", "monitoring", "clean")
+		},
+		// Act
+		func(t *testing.T, binaryPath string, dataDirPath string) {
+			runErr = base.RunCommand(t, binaryPath, "sedge", "monitoring", "init", "lido", "--node-operator-id", "-20", "--network", "mainnet")
+		},
+		// Assert
+		func(t *testing.T, dataDirPath string) {
+			assert.Error(t, runErr)
+
+			checkMonitoringStackNotInstalled(t)
+			checkMonitoringStackContainersNotRunning(t, grafanaOnCallContainers...)
+		},
+	)
+	// Run test case
+	e2eTest.run()
+}
+
+func TestE2E_MonitoringStack_InitLido_InvalidAddress_Mainnet(t *testing.T) {
+	skipIfNotAMD64(t)
+	// Test context
+	var (
+		runErr error
+	)
+	// Build test case
+	e2eTest := newE2ESedgeTestCase(
+		t,
+		// Arrange
+		func(t *testing.T, sedgePath string) error {
+			return base.RunCommand(t, sedgePath, "sedge", "monitoring", "clean")
+		},
+		// Act
+		func(t *testing.T, binaryPath string, dataDirPath string) {
+			runErr = base.RunCommand(t, binaryPath, "sedge", "monitoring", "init", "lido", "--reward-address", "xrewardx", "--network", "mainnet")
+		},
+		// Assert
+		func(t *testing.T, dataDirPath string) {
+			assert.Error(t, runErr)
+
+			checkMonitoringStackNotInstalled(t)
+			checkMonitoringStackContainersNotRunning(t, grafanaOnCallContainers...)
+		},
+	)
+	// Run test case
+	e2eTest.run()
+}
+
+func TestE2E_MonitoringStack_InitLido_ValidID_Mainnet(t *testing.T) {
+	skipIfNotAMD64(t)
+	// Test context
+	var (
+		runErr error
+	)
+	// Build test case
+	e2eTest := newE2ESedgeTestCase(
+		t,
+		// Arrange
+		nil,
+		// Act
+		func(t *testing.T, binaryPath string, dataDirPath string) {
+			runErr = base.RunCommand(t, binaryPath, "sedge", "monitoring", "init", "lido", "--node-operator-id", "1", "--network", "mainnet")
+		},
+		// Assert
+		func(t *testing.T, dataDirPath string) {
+			assert.NoError(t, runErr)
+			checkMonitoringStackDir(t)
+			checkPrometheusDir(t)
+			checkMonitoringStackContainers(t, "sedge_lido_exporter")
+			checkPrometheusTargetsUp(t, "sedge_lido_exporter:8080", "sedge_node_exporter:9100")
+			checkGrafanaHealth(t)
 		},
 	)
 	// Run test case

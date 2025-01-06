@@ -21,8 +21,7 @@ If you are interested in becoming a Lido node operator, make sure to read the [N
 
 :::info
 
-Lido CSM is **[currently live and permissionless on the Holesky testnet](https://operatorportal.lido.fi/modules/community-staking-module)**.
-The Mainnet launch is expected soon. You can check your eligibility for the Early Adoption program on Mainnet [here](https://lidofinance.github.io/csm-ea-checker/).
+Lido CSM is **[currently live and permissionless on Mainnet and the Holesky testnet](https://operatorportal.lido.fi/modules/community-staking-module)**.
 
 :::
 
@@ -95,7 +94,7 @@ running and ready for validator activation.
 
 :::info
 
-The official [instructions guide] (https://dvt-homestaker.stakesaurus.com/bonded-validators-setup/lido-csm/upload-remove-view-validator-keys#upload-keys) provides detailed instructions on how to upload the deposit data and register your Node Operator.
+The official [instructions guide](https://dvt-homestaker.stakesaurus.com/bonded-validators-setup/lido-csm/upload-remove-view-validator-keys#upload-keys) provides detailed instructions on how to upload the deposit data and register your Node Operator.
 
 :::
 
@@ -109,12 +108,16 @@ CSM Widget.
 
 ### Checking Node Operator Status
 
-To view detailed data about your Node Operator, use the `sedge lido-status` [command](../commands/lidoStatus.mdx). This command displays information specific to the Node Operator based on the provided rewards address.
+To view detailed data about your Node Operator, use the `sedge lido-status` [command](../commands/lidoStatus.mdx). This command displays information specific to the Node Operator based on the provided rewards address or node operator ID.
 
+**Using the rewards address**
 ```bash
 sedge lido-status <your_reward_address>
 ```
-
+**Using the node operator ID**
+```bash
+sedge lido-status --nodeID <your_node_operator_id>
+```
 :::info
 
 `rewardAddress` is the ultimate recipient of the rewards. It can perform the following actions regarding the CSM Node Operator:
@@ -123,7 +126,7 @@ sedge lido-status <your_reward_address>
 - Propose a new `rewardAddress`
 - Reset `managerAddress` to make it equal to the current `rewardAddress`
 
-The [Lido Documentation] (https://docs.lido.fi/staking-modules/csm/guides/addresses#reward-address) provides detailed information about the `rewardAddress`.
+The [Lido Documentation](https://docs.lido.fi/staking-modules/csm/guides/addresses#reward-address) provides detailed information about the `rewardAddress`.
 
 :::
 
@@ -134,6 +137,92 @@ This command helps you monitor your Node Operator's performance by displaying:
 - Node Operator ID
 - Queue information (e.g., available for deposit, stuck, refunded, exited, deposited)
 - Bond and rewards details
+
+### **Monitoring through Grafana Dashboards**
+
+Sedge provides an integrated monitoring stack with pre-configured Grafana dashboards. These dashboards display detailed insights about your Lido CSM node operator performance, including key metrics such as validator status, bond information, non-claimed rewards, penalties, and exit requests.
+
+#### How to Launch the Grafana Service
+
+1. To initialize and start the monitoring stack, run the following command:
+    
+    ```bash
+    sedge monitoring init lido --node-operator-id <ID>
+    ```
+    
+    The following flags can also be included:
+    
+    - `--network`: `holesky` or `mainnet`, set to `holesky` by default.
+    - `--reward-address`: Can replace the `--node-operator-id` flag with the rewards address to identify the node operator.
+
+2. This will install and configure the monitoring services for your Lido CSM node, including Grafana and Prometheus, as well as the Grafana OnCall and Prometheus alertmanager modules. 
+3. Once the monitoring stack is running, you can access the Grafana dashboards by navigating to `http://localhost:3000`.
+4. You will find dashboards specifically designed for Lido CSM with key panels:
+    - **Keys and Bonds Information**: Displays data about validator keys (deposited, exit requests, etc.) and bond statuses (current bond, required bond, etc.).
+    - **Rewards:** non-claimed rewards for your node operator.
+    - **Penalties**: Tracks penalties related to slashing, EL rewards stealing, and withdrawal issues.
+    - **Exit Requests**: Monitors exit requests for your validators.
+
+### **Alerting for Penalties and Exit Requests**
+
+To monitor critical events from your Lido node operations, such as penalties or exit requests, **Grafana OnCall** can be connected with **Prometheus Alertmanager**. Sedge’s monitoring stack provides pre-configured alerts for various scenarios related to Lido's CSM node operations. Follow these steps to connect **Grafana OnCall** with **Sedge** and ensure you’re alerted in real-time.
+
+#### I. Initialize the monitoring stack with Lido-specific configurations:
+
+```bash
+sedge monitoring init lido --node-operator-id <ID>
+```
+
+#### II. Connect Grafana OnCall with Prometheus Alertmanager
+
+Follow these steps to integrate **Grafana OnCall** with **Sedge**’s pre-configured rules and alerts:
+
+1. **Go to OnCall > Integrations > New Integration**.
+2. Choose **Alertmanager (Prometheus)** and click **Create Integration**.
+3. Copy the integration's **HTTP Endpoint**.
+4. On your PC, navigate to the following path:
+    - Default path: `$XDG_DATA_HOME/.sedge` or `$HOME/.local/share/.sedge` if `$XDG_DATA_HOME` is not set.
+    - Go to `monitoring > prometheus > alertmanager > alertmanager.yml`.
+5. Update the configuration by adding the Grafana OnCall webhook:
+
+```yaml
+receivers:
+- name: 'grafana_oncall'
+	webhook_configs:
+	- url: <your HTTP Endpoint>
+```
+
+6. Replace any instance of `http://localhost:<port>` with `http://engine:8080` to ensure proper communication between Prometheus and Grafana.
+7. Restart the **Alertmanager container**:
+    - Go to your Docker setup and locate the **sedge_alertmanager** container.
+    - Restart the container to apply changes.
+
+Next, log into Grafana and complete the remaining configurations.
+
+#### III. Access Your Grafana Instance
+
+1. Log into your **Grafana** instance at `http://localhost:3000`.
+2. Go to **Administrations > Users and Access > Users**.
+3. Click on **Edit Info** and update your email address (make sure it matches your Grafana account email).
+
+#### IV. Navigate to OnCall
+
+In your Grafana instance:
+
+1. Go to **Alerts & IRM** and select **OnCall**.
+2. Grafana OnCall will display all configured alerts. Sedge provides the following pre-configured rules for Lido operations:
+    - **Initial Slashing Detected**: Triggered when a slashing event occurs.
+    - **Withdrawal Penalty Detected**: Alerts when a penalty related to withdrawal of funds is incurred.
+    - **EL Rewards Stealing Penalty Detected**: Notifies when an EL rewards stealing penalty is incurred.
+    - **Exit Request Detected**: Alerts when one or more validators request an exit.
+
+#### V. Configure Contact Points in Grafana OnCall
+
+To start receiving alerts:
+
+1. Navigate to **OnCall** settings in Grafana.
+2. Ensure that your **contact points** (email, Slack, Telegram, etc.) are configured for notifications.
+3. Grafana will send notifications based on the pre-configured alert rules whenever critical events occur in your Lido node operations.
 
 ### Additional Management Tasks
 

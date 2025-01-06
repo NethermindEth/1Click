@@ -47,8 +47,8 @@ var (
 )
 
 const (
-	execution, consensus, validator, mevBoost, optimism = "execution", "consensus", "validator", "mev-boost", "optimism"
-	jwtPathName                                         = "jwtsecret"
+	execution, consensus, validator, distributedValidator, mevBoost, optimism, opExecution = "execution", "consensus", "validator", "distributedValidator", "mev-boost", "optimism", "opexecution"
+	jwtPathName                                                                            = "jwtsecret"
 )
 
 type CustomFlags struct {
@@ -70,31 +70,34 @@ type OptimismFlags struct {
 type GenCmdFlags struct {
 	CustomFlags
 	OptimismFlags
-	executionName     string
-	consensusName     string
-	validatorName     string
-	checkpointSyncUrl string
-	feeRecipient      string
-	noMev             bool
-	mevImage          string
-	mevBoostOnVal     bool
-	noValidator       bool
-	jwtPath           string
-	graffiti          string
-	mapAllPorts       bool
-	fallbackEL        []string
-	elExtraFlags      []string
-	clExtraFlags      []string
-	vlExtraFlags      []string
-	relayURLs         []string
-	mevBoostUrl       string
-	executionApiUrl   string
-	executionAuthUrl  string
-	consensusApiUrl   string
-	waitEpoch         int
-	customEnodes      []string
-	customEnrs        []string
-	latestVersion     bool
+	executionName            string
+	consensusName            string
+	validatorName            string
+	distributed              bool
+	distributedValidatorName string
+	checkpointSyncUrl        string
+	feeRecipient             string
+	noMev                    bool
+	mevImage                 string
+	mevBoostOnVal            bool
+	noValidator              bool
+	jwtPath                  string
+	graffiti                 string
+	mapAllPorts              bool
+	fallbackEL               []string
+	elExtraFlags             []string
+	clExtraFlags             []string
+	vlExtraFlags             []string
+	dvExtraFlags             []string
+	relayURLs                []string
+	mevBoostUrl              string
+	executionApiUrl          string
+	executionAuthUrl         string
+	consensusApiUrl          string
+	waitEpoch                int
+	customEnodes             []string
+	customEnrs               []string
+	latestVersion            bool
 }
 
 func GenerateCmd(sedgeAction actions.SedgeActions) *cobra.Command {
@@ -309,46 +312,49 @@ func runGenCmd(out io.Writer, flags *GenCmdFlags, sedgeAction actions.SedgeActio
 
 	// Generate docker-compose scripts
 	gd := generate.GenData{
-		ExecutionClient:         combinedClients.Execution,
-		ConsensusClient:         combinedClients.Consensus,
-		ValidatorClient:         combinedClients.Validator,
-		ExecutionOPClient:       combinedClients.ExecutionOP,
-		OptimismClient:          combinedClients.Optimism,
-		Network:                 network,
-		CheckpointSyncUrl:       flags.checkpointSyncUrl,
-		FeeRecipient:            flags.feeRecipient,
-		JWTSecretPath:           flags.jwtPath,
-		Graffiti:                flags.graffiti,
-		FallbackELUrls:          flags.fallbackEL,
-		ElExtraFlags:            flags.elExtraFlags,
-		ClExtraFlags:            flags.clExtraFlags,
-		VlExtraFlags:            flags.vlExtraFlags,
-		ElOpExtraFlags:          flags.elOpExtraFlags,
-		OpExtraFlags:            flags.opExtraFlags,
-		IsBase:                  flags.isBase,
-		MapAllPorts:             flags.mapAllPorts,
-		Mev:                     !flags.noMev && utils.Contains(services, validator) && utils.Contains(services, consensus) && !flags.noValidator,
-		MevImage:                flags.mevImage,
-		LoggingDriver:           configs.GetLoggingDriver(logging),
-		RelayURLs:               flags.relayURLs,
-		MevBoostService:         utils.Contains(services, mevBoost),
-		MevBoostEndpoint:        flags.mevBoostUrl,
-		Services:                services,
-		VLStartGracePeriod:      uint(vlStartGracePeriod.Seconds()),
-		ExecutionApiUrl:         executionApiUrl,
-		ExecutionAuthUrl:        executionAuthUrl,
-		ConsensusApiUrl:         consensusApiUrl,
-		ECBootnodes:             flags.customEnodes,
-		CCBootnodes:             flags.customEnrs,
-		CustomChainSpecPath:     flags.CustomFlags.customChainSpec,
-		CustomNetworkConfigPath: flags.CustomFlags.customNetworkConfig,
-		CustomGenesisPath:       flags.CustomFlags.customGenesis,
-		CustomDeployBlock:       flags.customDeployBlock,
-		CustomDeployBlockPath:   flags.CustomFlags.customDeployBlock,
-		MevBoostOnValidator:     flags.mevBoostOnVal,
-		ContainerTag:            containerTag,
-		LatestVersion:           flags.latestVersion,
-		JWTSecretOP:             jwtSecretOP,
+		ExecutionClient:            combinedClients.Execution,
+		ConsensusClient:            combinedClients.Consensus,
+		ValidatorClient:            combinedClients.Validator,
+		Distributed:                flags.distributed,
+		DistributedValidatorClient: combinedClients.DistributedValidator,
+		ExecutionOPClient:          combinedClients.ExecutionOP,
+		OptimismClient:             combinedClients.Optimism,
+		Network:                    network,
+		CheckpointSyncUrl:          flags.checkpointSyncUrl,
+		FeeRecipient:               flags.feeRecipient,
+		JWTSecretPath:              flags.jwtPath,
+		Graffiti:                   flags.graffiti,
+		FallbackELUrls:             flags.fallbackEL,
+		ElExtraFlags:               flags.elExtraFlags,
+		ClExtraFlags:               flags.clExtraFlags,
+		VlExtraFlags:               flags.vlExtraFlags,
+		DvExtraFlags:               flags.dvExtraFlags,
+		ElOpExtraFlags:             flags.elOpExtraFlags,
+		OpExtraFlags:               flags.opExtraFlags,
+		IsBase:                     flags.isBase,
+		MapAllPorts:                flags.mapAllPorts,
+		Mev:                        !flags.noMev && utils.Contains(services, validator) && utils.Contains(services, consensus) && !flags.noValidator,
+		MevImage:                   flags.mevImage,
+		LoggingDriver:              configs.GetLoggingDriver(logging),
+		RelayURLs:                  flags.relayURLs,
+		MevBoostService:            utils.Contains(services, mevBoost),
+		MevBoostEndpoint:           flags.mevBoostUrl,
+		Services:                   services,
+		VLStartGracePeriod:         uint(vlStartGracePeriod.Seconds()),
+		ExecutionApiUrl:            executionApiUrl,
+		ExecutionAuthUrl:           executionAuthUrl,
+		ConsensusApiUrl:            consensusApiUrl,
+		ECBootnodes:                flags.customEnodes,
+		CCBootnodes:                flags.customEnrs,
+		CustomChainSpecPath:        flags.CustomFlags.customChainSpec,
+		CustomNetworkConfigPath:    flags.CustomFlags.customNetworkConfig,
+		CustomGenesisPath:          flags.CustomFlags.customGenesis,
+		CustomDeployBlock:          flags.customDeployBlock,
+		CustomDeployBlockPath:      flags.CustomFlags.customDeployBlock,
+		MevBoostOnValidator:        flags.mevBoostOnVal,
+		ContainerTag:               containerTag,
+		LatestVersion:              flags.latestVersion,
+		JWTSecretOP:                jwtSecretOP,
 	}
 	_, err = sedgeAction.Generate(actions.GenerateOptions{
 		GenerationData: gd,
@@ -377,6 +383,7 @@ func runGenCmd(out io.Writer, flags *GenCmdFlags, sedgeAction actions.SedgeActio
 
 func valClients(allClients clients.OrderedClients, flags *GenCmdFlags, services []string) (*clients.Clients, error) {
 	var executionClient, consensusClient, validatorClient, executionOpClient, opClient *clients.Client
+	var distributedValidatorClient *clients.Client
 	var err error
 
 	// execution client
@@ -403,6 +410,11 @@ func valClients(allClients clients.OrderedClients, flags *GenCmdFlags, services 
 	}
 	// consensus client
 	if utils.Contains(services, consensus) {
+		if network == NetworkGnosis || network == NetworkChiado {
+			if flags.consensusName == "nimbus" {
+				flags.consensusName = "nimbus:ghcr.io/gnosischain/gnosis-nimbus-eth2:v24.9"
+			}
+		}
 		consensusParts := strings.Split(flags.consensusName, ":")
 		consensusClient, err = clients.RandomChoice(allClients[consensus])
 		if err != nil {
@@ -454,7 +466,7 @@ func valClients(allClients clients.OrderedClients, flags *GenCmdFlags, services 
 			return nil, err
 		}
 		if flags.optimismName != "" {
-			opClient.Name = "optimism"
+			opClient.Name = "opnode"
 			if len(optimismParts) > 1 {
 				opClient.Image = strings.Join(optimismParts[1:], ":")
 			}
@@ -465,15 +477,18 @@ func valClients(allClients clients.OrderedClients, flags *GenCmdFlags, services 
 		}
 
 		optimismExecutionParts := strings.Split(flags.optimismExecutionName, ":")
-		executionOpClient = allClients[execution]["nethermind"]
+		executionOpClient, err = clients.RandomChoice(allClients[opExecution])
+		if err != nil {
+			return nil, err
+		}
 		if flags.optimismExecutionName != "" {
-			executionOpClient.Name = optimismExecutionParts[0]
+			executionOpClient.Name = strings.ReplaceAll(optimismExecutionParts[0], "-", "")
 			if len(optimismExecutionParts) > 1 {
 				executionOpClient.Image = strings.Join(optimismExecutionParts[1:], ":")
 			}
 		}
 		executionOpClient.SetImageOrDefault(strings.Join(optimismExecutionParts[1:], ":"))
-		if err = clients.ValidateClient(executionOpClient, optimism); err != nil {
+		if err = clients.ValidateClient(executionOpClient, opExecution); err != nil {
 			return nil, err
 		}
 
@@ -487,12 +502,32 @@ func valClients(allClients clients.OrderedClients, flags *GenCmdFlags, services 
 		executionOpClient = nil
 	}
 
+	// distributed validator client
+	if utils.Contains(services, distributedValidator) {
+		distributedValidatorClient, _ = clients.RandomChoice(allClients[distributedValidator])
+		if flags.distributedValidatorName != "" {
+			distributedValidatorParts := strings.Split(flags.distributedValidatorName, ":")
+			distributedValidatorClient.Name = distributedValidatorParts[0]
+			if len(distributedValidatorParts) > 1 {
+				distributedValidatorClient.Image = strings.Join(distributedValidatorParts[1:], ":")
+			}
+			distributedValidatorClient.SetImageOrDefault(strings.Join(distributedValidatorParts[1:], ":"))
+		} else {
+			distributedValidatorClient.Name = "charon"
+			distributedValidatorClient.SetImageOrDefault("")
+		}
+		if err = clients.ValidateClient(distributedValidatorClient, distributedValidator); err != nil {
+			return nil, err
+		}
+	}
+
 	return &clients.Clients{
-		Execution:   executionClient,
-		Consensus:   consensusClient,
-		Validator:   validatorClient,
-		ExecutionOP: executionOpClient,
-		Optimism:    opClient,
+		Execution:            executionClient,
+		Consensus:            consensusClient,
+		Validator:            validatorClient,
+		DistributedValidator: distributedValidatorClient,
+		ExecutionOP:          executionOpClient,
+		Optimism:             opClient,
 	}, err
 }
 

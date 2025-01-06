@@ -56,7 +56,7 @@ This is an example of importing slashing protection data to a setup using sepoli
 ```shell
 $ sedge slashing-import prysm -f slashing-export.json -n sepolia
 2023-01-06 14:59:11 -- [INFO] [Logger Init] Log level: info
-2023-01-06 14:59:11 -- [INFO] You are running the latest version of sedge. Version:  v1.5.0
+2023-01-06 14:59:11 -- [INFO] You are running the latest version of sedge. Version:  v1.7.2
 # highlight-next-line
 2023-01-06 14:59:11 -- [INFO] Importing slashing data to client prysm from slashing-export.json
 # highlight-next-line
@@ -70,7 +70,7 @@ Notice in this case the validator client remains stopped because it has been sto
 ```shell
 $ sedge slashing-import prysm -f slashing-export.json -n sepolia --start-validator
 2023-01-06 15:08:05 -- [INFO] [Logger Init] Log level: info
-2023-01-06 15:08:06 -- [INFO] You are running the latest version of sedge. Version:  v1.5.0
+2023-01-06 15:08:06 -- [INFO] You are running the latest version of sedge. Version:  v1.7.2
 2023-01-06 15:08:06 -- [INFO] Importing slashing data to client prysm from slashing-export.json
 2023-01-06 15:08:06 -- [INFO] The slashing protection container is starting...
 2023-01-06 15:08:06 -- [INFO] The slashing container ends successfully.
@@ -85,7 +85,7 @@ Another case may be importing the slashing data protection when the validator is
 ```shell
 $ sedge slashing-import prysm -f slashing-export.json -n sepolia 
 2023-01-06 15:10:27 -- [INFO] [Logger Init] Log level: info
-2023-01-06 15:10:27 -- [INFO] You are running the latest version of sedge. Version:  v1.5.0
+2023-01-06 15:10:27 -- [INFO] You are running the latest version of sedge. Version:  v1.7.2
 # highlight-next-line
 2023-01-06 15:10:27 -- [INFO] Stopping validator client...
 # highlight-next-line
@@ -106,7 +106,7 @@ In this case, the validator client is stopped before the import and started agai
  ```shell
 $ sedge slashing-import prysm -f slashing-export.json -n sepolia --stop-validator
 2023-01-06 15:12:22 -- [INFO] [Logger Init] Log level: info
-2023-01-06 15:12:22 -- [INFO] You are running the latest version of sedge. Version:  v1.5.0
+2023-01-06 15:12:22 -- [INFO] You are running the latest version of sedge. Version:  v1.7.2
 # highlight-next-line
 2023-01-06 15:12:22 -- [INFO] Stopping validator client...
 # highlight-next-line

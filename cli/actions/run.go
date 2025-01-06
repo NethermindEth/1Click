@@ -21,7 +21,6 @@ import (
 
 	"github.com/NethermindEth/sedge/configs"
 	"github.com/NethermindEth/sedge/internal/pkg/commands"
-	log "github.com/sirupsen/logrus"
 )
 
 type RunContainersOptions struct {
@@ -31,24 +30,21 @@ type RunContainersOptions struct {
 }
 
 func (s *sedgeActions) RunContainers(options RunContainersOptions) error {
-	upCmd := s.commandRunner.BuildDockerComposeUpCMD(commands.DockerComposeUpOptions{
+	err := s.composeManager.Up(commands.DockerComposeUpOptions{
 		Path:     filepath.Join(options.GenerationPath, configs.DefaultDockerComposeScriptName),
 		Services: options.Services,
 	})
-	log.Infof(configs.RunningCommand, upCmd.Cmd)
-	_, _, err := s.commandRunner.RunCMD(upCmd)
 	if err != nil {
-		return fmt.Errorf(configs.CommandError, upCmd.Cmd, err)
+		return fmt.Errorf(configs.RunContainersErr, err)
 	}
 	if !options.SkipDockerPs {
 		// Run docker compose ps --filter status=running to show script running containers
-		dcpsCMD := s.commandRunner.BuildDockerComposePSCMD(commands.DockerComposePsOptions{
+		_, err := s.composeManager.PS(commands.DockerComposePsOptions{
 			Path:          filepath.Join(options.GenerationPath, configs.DefaultDockerComposeScriptName),
 			FilterRunning: true,
 		})
-		log.Infof(configs.RunningCommand, dcpsCMD.Cmd)
-		if _, _, err := s.commandRunner.RunCMD(dcpsCMD); err != nil {
-			return fmt.Errorf(configs.CommandError, dcpsCMD.Cmd, err)
+		if err != nil {
+			return fmt.Errorf(configs.RunContainersErr, err)
 		}
 	}
 	return nil

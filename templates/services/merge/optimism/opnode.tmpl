@@ -1,0 +1,33 @@
+{{/* opnode.tmpl */}}
+{{ define "optimism" }}
+  l2cl:
+    tty: true
+    environment:
+      - TERM=xterm-256color
+      - COLORTERM=truecolor
+    stop_grace_period: 30s
+    container_name: sedge-consensus-op-l2-client{{if .ContainerTag}}-{{.ContainerTag}}{{end}}
+    restart: unless-stopped
+    image: ${OP_IMAGE_VERSION}
+    networks:
+      - sedge
+    volumes:
+      - ${EC_OP_JWT_SECRET_PATH}:/tmp/jwt/jwtsecret
+    command:
+      - op-node
+      - --l1=${EC_API_URL}
+      - --network={{.NetworkPrefix}}-${NETWORK}
+      - --l1.rpckind=any
+      - --l1.trustrpc
+      - --l2=${EC_OP_RPC_URL}
+      - --l2.jwt-secret=/tmp/jwt/jwtsecret
+      - --syncmode=execution-layer
+      {{if .ConsensusApiURL}}
+      - --l1.beacon={{.ConsensusApiURL}}{{end}}{{range $flag := .OPExtraFlags}}
+      - --{{$flag}}{{end}}{{if .LoggingDriver}}
+    logging:
+      driver: "{{.LoggingDriver}}"{{if eq .LoggingDriver "json-file"}}
+      options:
+        max-size: "10m"
+        max-file: "10"{{end}}{{end}}
+{{ end }}

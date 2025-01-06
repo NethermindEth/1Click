@@ -16,6 +16,7 @@ limitations under the License.
 package actions
 
 import (
+	"github.com/NethermindEth/sedge/internal/compose"
 	"github.com/NethermindEth/sedge/internal/pkg/commands"
 	"github.com/NethermindEth/sedge/internal/pkg/generate"
 	"github.com/docker/docker/client"
@@ -39,12 +40,14 @@ type sedgeActions struct {
 	dockerClient         client.APIClient
 	dockerServiceManager DockerServiceManager
 	commandRunner        commands.CommandRunner
+	composeManager       compose.ComposeManager
 }
 
 type SedgeActionsOptions struct {
 	DockerClient         client.APIClient
 	DockerServiceManager DockerServiceManager
 	CommandRunner        commands.CommandRunner
+	ComposeManager       compose.ComposeManager
 }
 
 func NewSedgeActions(options SedgeActionsOptions) SedgeActions {
@@ -52,6 +55,7 @@ func NewSedgeActions(options SedgeActionsOptions) SedgeActions {
 		dockerClient:         options.DockerClient,
 		dockerServiceManager: options.DockerServiceManager,
 		commandRunner:        options.CommandRunner,
+		composeManager:       options.ComposeManager,
 	}
 }
 

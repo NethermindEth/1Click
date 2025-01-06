@@ -35,6 +35,7 @@ func TestSupportedClients(t *testing.T) {
 		{"execution", "mainnet", AllClients["execution"], false},
 		{"consensus", "mainnet", AllClients["consensus"], false},
 		{"validator", "mainnet", AllClients["validator"], false},
+		{"distributedValidator", "holesky", AllClients["distributedValidator"], false},
 		{"random", "mainnet", []string{}, true},
 	}
 
@@ -91,8 +92,8 @@ func TestClients(t *testing.T) {
 	inputs := [...]clientsTestCase{
 		{
 			map[string][]string{
-				"consensus": {"lighthouse", "prysm", "teku", "lodestar"},
-				"validator": {"lighthouse", "prysm", "teku", "lodestar"},
+				"consensus": {"lighthouse", "prysm", "teku", "lodestar", "nimbus"},
+				"validator": {"lighthouse", "prysm", "teku", "lodestar", "nimbus"},
 				"execution": {"nethermind", "geth", "besu", "erigon"},
 			},
 			[]string{"consensus"},
@@ -111,7 +112,7 @@ func TestClients(t *testing.T) {
 		},
 		{
 			map[string][]string{
-				"validator": {"lighthouse", "prysm", "teku", "lodestar"},
+				"validator": {"lighthouse", "prysm", "teku", "lodestar", "nimbus"},
 				"execution": {"nethermind", "geth", "besu", "erigon"},
 			},
 			[]string{"execution", "validator"},
@@ -120,8 +121,8 @@ func TestClients(t *testing.T) {
 		},
 		{
 			map[string][]string{
-				"validator": {"lighthouse", "prysm", "teku", "lodestar"},
-				"consensus": {"lighthouse", "prysm", "teku", "lodestar"},
+				"validator": {"lighthouse", "prysm", "teku", "lodestar", "nimbus"},
+				"consensus": {"lighthouse", "prysm", "teku", "lodestar", "nimbus"},
 				"execution": {"nethermind", "geth", "besu", "erigon"},
 			},
 			[]string{"consensus", "other"},
@@ -130,12 +131,23 @@ func TestClients(t *testing.T) {
 		},
 		{
 			map[string][]string{
-				"validator": {"lighthouse", "teku", "lodestar"},
-				"consensus": {"lighthouse", "teku", "lodestar"},
+				"validator": {"lighthouse", "teku", "lodestar", "nimbus"},
+				"consensus": {"lighthouse", "teku", "lodestar", "nimbus"},
 				"execution": {"nethermind", "erigon"},
 			},
 			[]string{"consensus", "execution", "validator"},
 			"gnosis",
+			false,
+		},
+		{
+			map[string][]string{
+				"validator":            {"lighthouse", "prysm", "teku", "lodestar", "nimbus"},
+				"consensus":            {"lighthouse", "prysm", "teku", "lodestar", "nimbus"},
+				"execution":            {"nethermind", "geth", "besu", "erigon"},
+				"distributedValidator": {"charon"},
+			},
+			[]string{"consensus", "execution", "validator", "distributedValidator"},
+			"holesky",
 			false,
 		},
 	}

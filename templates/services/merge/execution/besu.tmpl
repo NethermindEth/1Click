@@ -22,7 +22,7 @@
       - {{.ElApiPort}}
       - {{.ElAuthPort}}
     command:
-    - --sync-mode=X_SNAP
+    - --sync-mode=SNAP
     - --data-storage-format=BONSAI{{if .CustomChainSpecPath}}
     - --genesis-file=/nethermind/custom_config/chainspec.json{{else}}
     - --network={{if .SplittedNetwork}}${EL_NETWORK}{{else}}${NETWORK}{{end}}{{end}}

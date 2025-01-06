@@ -336,12 +336,12 @@ func TestUriValidator(t *testing.T) {
 		},
 		{
 			"bad uri",
-			[]string{"./8080"},
+			[]string{"./8088"},
 			false,
 		},
 		{
 			"bad uri",
-			[]string{"44.33.55.66:8080"},
+			[]string{"44.33.55.66:8088"},
 			false,
 		},
 		{

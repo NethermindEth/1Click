@@ -1,0 +1,16 @@
+global:
+  resolve_timeout: 5m
+
+route:
+  group_by: ['alertname']
+  group_wait: 10s
+  group_interval: 10s
+  repeat_interval: 2h
+  receiver: 'grafana_oncall'
+
+receivers:
+  - name: 'grafana_oncall'
+    webhook_configs:
+      - url: http://engine:8080/integrations/v1/alertmanager/nFdGQQ8eVB8AmLD0hNersILA3/
+        send_resolved: true
+        max_alerts: 100

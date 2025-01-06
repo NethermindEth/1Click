@@ -18,10 +18,9 @@ courtney/
 
 mocks/
 
-internal/lido/contracts/csaccounting/CSAccounting.go
+build/lido-exporter
+.charon/
+node*/
 
-internal/lido/contracts/csfeedistributor/CSFeeDistributor.go
-
-internal/lido/contracts/csmodule/CSModule.go
-
-internal/lido/contracts/mevboostrelaylist/MEVBoostRelayAllowedList.go
+keystore*
+!cli/actions/testdata/charon/validator_keys/keystore*

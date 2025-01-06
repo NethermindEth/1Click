@@ -31,6 +31,7 @@ import (
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
 
+	"github.com/NethermindEth/sedge/internal/compose"
 	"github.com/NethermindEth/sedge/internal/pkg/commands"
 	"github.com/NethermindEth/sedge/internal/pkg/dependencies"
 	"github.com/NethermindEth/sedge/test"
@@ -39,6 +40,7 @@ import (
 
 type downCmdTestCase struct {
 	generationPath string
+	composeMgr     compose.ComposeManager
 	runner         commands.CommandRunner
 	depsMgr        dependencies.DependenciesManager
 	sedgeActions   actions.SedgeActions
@@ -78,6 +80,8 @@ func buildDownTestCase(t *testing.T, caseName string, isErr bool, path string) *
 			return "", nil
 		},
 	}
+	composeMgr := compose.NewComposeManager(tc.runner)
+	tc.composeMgr = *composeMgr
 
 	tc.generationPath = path
 	tc.fdOut = new(bytes.Buffer)
@@ -93,7 +97,7 @@ func TestDownCmd(t *testing.T) {
 
 	for _, tc := range tcs {
 		rootCmd := RootCmd()
-		rootCmd.AddCommand(DownCmd(tc.runner, tc.sedgeActions, tc.depsMgr))
+		rootCmd.AddCommand(DownCmd(tc.composeMgr, tc.runner, tc.sedgeActions, tc.depsMgr))
 		rootCmd.SetArgs([]string{"down", "--path", tc.generationPath})
 		rootCmd.SetOut(tc.fdOut)
 		log.SetOutput(tc.fdOut)
@@ -196,7 +200,7 @@ func TestDown_Error(t *testing.T) {
 				pathFlag = tc.customPath
 			}
 			tt := buildDownTestCase(t, "case_1", true, pathFlag)
-			downCmd := DownCmd(tc.runner, tt.sedgeActions, tt.depsMgr)
+			downCmd := DownCmd(tt.composeMgr, tc.runner, tt.sedgeActions, tt.depsMgr)
 			downCmd.SetArgs([]string{"--path", pathFlag})
 			downCmd.SetOut(io.Discard)
 			err := downCmd.Execute()

@@ -21,6 +21,7 @@ import (
 
 	"github.com/NethermindEth/sedge/cli/actions"
 	"github.com/NethermindEth/sedge/configs"
+	"github.com/NethermindEth/sedge/internal/compose"
 	"github.com/NethermindEth/sedge/internal/pkg/commands"
 	"github.com/NethermindEth/sedge/internal/pkg/dependencies"
 	"github.com/NethermindEth/sedge/internal/utils"
@@ -29,7 +30,7 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-func DownCmd(cmdRunner commands.CommandRunner, a actions.SedgeActions, depsMgr dependencies.DependenciesManager) *cobra.Command {
+func DownCmd(composeManager compose.ComposeManager, cmdRunner commands.CommandRunner, a actions.SedgeActions, depsMgr dependencies.DependenciesManager) *cobra.Command {
 	// Flags
 	var generationPath string
 	// Build command
@@ -49,13 +50,11 @@ func DownCmd(cmdRunner commands.CommandRunner, a actions.SedgeActions, depsMgr d
 				return err
 			}
 
-			downCMD := cmdRunner.BuildDockerComposeDownCMD(commands.DockerComposeDownOptions{
+			err := composeManager.Down(commands.DockerComposeDownOptions{
 				Path: filepath.Join(generationPath, configs.DefaultDockerComposeScriptName),
 			})
-
-			log.Debugf(configs.RunningCommand, downCMD.Cmd)
-			if _, _, err := cmdRunner.RunCMD(downCMD); err != nil {
-				return fmt.Errorf(configs.CommandError, downCMD.Cmd, err)
+			if err != nil {
+				return fmt.Errorf("error shutting down contaiers %w", err)
 			}
 
 			return nil

@@ -1,0 +1,105 @@
+---
+sidebar_position: 16
+id: monitoring
+---
+# Monitoring
+
+Running `sedge monitoring` will allow you to manage the monitoring stack used for tracking the performance and health of node operations.
+
+## Help
+
+```
+$ sedge monitoring -h
+Manage the monitoring stack. Use 'init' to install and run, or 'clean' to stop and uninstall.
+
+Usage:
+  sedge monitoring [command] [flags]
+
+Available Commands:
+  init        Initialize the monitoring stack (Grafana, Prometheus, etc.)
+  clean       Clean and uninstall the monitoring stack
+
+Flags:
+  -h, --help   help for monitoring
+
+Global Flags:
+  --log-level string   Set log level, e.g., panic, fatal, error, warn, warning, info, debug, trace (default "info")
+
+```
+
+## Init Command
+
+`sedge monitoring init` initializes the monitoring stack, configuring services like **Prometheus** and **Grafana**. It supports both default and Lido-specific configurations.
+
+```
+$ sedge monitoring init -h
+This command initializes the monitoring stack (Grafana, Prometheus, etc.) for Lido CSM or general node monitoring.
+
+Usage:
+  sedge monitoring init [subcommand] [flags]
+
+Available Subcommands:
+  default     Default monitoring configuration (Prometheus, Grafana, Node Exporter)
+  lido        Configure Lido CSM node monitoring (Prometheus, Grafana, Node Exporter, Lido Exporter)
+
+Flags:
+  -h, --help   help for init
+
+Global Flags:
+  --log-level string   Set log level, e.g., panic, fatal, error, warn, warning, info, debug, trace (default "info")
+```
+
+### Default Monitoring
+
+```
+$ sedge monitoring init default -h
+Default monitoring configuration using Prometheus, Grafana, and Node Exporter.
+
+Usage:
+  sedge monitoring init default [flags]
+
+Flags:
+  -h, --help   help for default
+```
+
+### Lido-Specific Monitoring
+
+```
+$ sedge monitoring init lido -h
+Configure Lido CSM node monitoring (Prometheus, Grafana, Node Exporter, Lido Exporter).
+
+Usage:
+  sedge monitoring init lido [flags]
+
+Flags:
+  --node-operator-id string   Lido Node Operator ID
+  --reward-address string     Reward address of Node Operator (used to calculate Node Operator ID if not set)
+  --network string            Target network (default "holesky")
+  --rpc-endpoints strings     List of Ethereum HTTP RPC endpoints
+  --ws-endpoints strings      List of Ethereum WebSocket RPC endpoints
+  --port uint16               Port for exporting metrics (default 8080)
+  --scrape-time duration      Scrape interval for metrics (default "30s")
+  --log-level string          Set log level (default "info")
+
+Global Flags:
+  --log-level string   Set log level, e.g., panic, fatal, error, warn, warning, info, debug, trace (default "info")
+```
+
+## Clean Command
+
+The `sedge monitoring clean` command stops and uninstalls the monitoring stack.
+
+```
+$ sedge monitoring clean -h
+Clean and uninstall the monitoring stack.
+
+Usage:
+  sedge monitoring clean [flags]
+
+Flags:
+  -h, --help   help for clean
+
+Global Flags:
+  --log-level string   Set log level, e.g., panic, fatal, error, warn, warning, info, debug, trace (default "info")
+
+```

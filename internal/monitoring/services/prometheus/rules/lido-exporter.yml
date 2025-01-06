@@ -1,0 +1,40 @@
+groups:
+  - name: Lido Exporter Penalties
+    rules:
+      - alert: InitialSlashingDetected
+        expr: increase(csm_onchain_penalties_total{penalty_type="initial_slashing"}[10m]) > 0
+        for: 1m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Initial slashing detected"
+          description: "An initial slashing penalty has been detected for node operator {{ $labels.node_operator_id }}."
+
+      - alert: WithdrawalPenaltyDetected
+        expr: increase(csm_onchain_penalties_total{penalty_type="withdrawal"}[10m]) > 0
+        for: 1m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Withdrawal penalty detected"
+          description: "A withdrawal penalty (less than 32 ETH) has been detected for node operator {{ $labels.node_operator_id }}."
+
+      - alert: ELRewardsStealingPenaltyDetected
+        expr: increase(csm_onchain_penalties_total{penalty_type="el_rewards_stealing"}[10m]) > 0
+        for: 1m
+        labels:
+          severity: warning
+        annotations:
+          summary: "EL rewards stealing penalty detected"
+          description: "An EL rewards stealing penalty has been detected for node operator {{ $labels.node_operator_id }}. Consider compensating the penalty."
+
+  - name: Lido Exporter Exit Requests
+    rules:
+      - alert: ExitRequestDetected
+        expr: csm_onchain_exit_requests_total > 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Exit requests detected"
+          description: "One or more exit requests have been detected for node operator {{ $labels.node_operator_id }}. Prompt action is required to exit the requested validators."

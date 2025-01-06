@@ -47,6 +47,7 @@ type SlashingImportOptions struct {
 
 func (s *sedgeActions) ImportSlashingInterchangeData(options SlashingImportOptions) error {
 	validatorContainerName := services.ContainerNameWithTag(services.DefaultSedgeValidatorClient, options.ContainerTag)
+	consensusContainerName := services.ContainerNameWithTag(services.DefaultSedgeConsensusClient, options.ContainerTag)
 	slashingContainerName := services.ContainerNameWithTag(services.ServiceCtSlashingData, options.ContainerTag)
 	// Check validator container exists
 	_, err := s.dockerServiceManager.ContainerID(validatorContainerName)
@@ -105,11 +106,18 @@ func (s *sedgeActions) ImportSlashingInterchangeData(options SlashingImportOptio
 			"--data-path=/data",
 			"--from=/data/slashing_protection.json",
 		}
+	case "nimbus":
+		cmd = []string{
+			"slashingdb",
+			"import",
+			"/data/slashing_protection.json",
+			"--validators-dir=/data",
+		}
 	default:
 		return fmt.Errorf("%w: %s", ErrUnsupportedValidatorClient, options.ValidatorClient)
 	}
 	log.Infof("Importing slashing data to client %s from %s", options.ValidatorClient, options.From)
-	if err := runSlashingContainer(s.dockerClient, s.dockerServiceManager, cmd, validatorContainerName, slashingContainerName); err != nil {
+	if err := runSlashingContainer(s.dockerClient, s.dockerServiceManager, cmd, validatorContainerName, consensusContainerName, slashingContainerName, options.ValidatorClient == "nimbus"); err != nil {
 		return err
 	}
 
@@ -136,6 +144,7 @@ type SlashingExportOptions struct {
 
 func (s *sedgeActions) ExportSlashingInterchangeData(options SlashingExportOptions) error {
 	validatorContainerName := services.ContainerNameWithTag(services.DefaultSedgeValidatorClient, options.ContainerTag)
+	consensusContainerName := services.ContainerNameWithTag(services.DefaultSedgeConsensusClient, options.ContainerTag)
 	slashingContainerName := services.ContainerNameWithTag(services.ServiceCtSlashingData, options.ContainerTag)
 	// Check validator container exists
 	_, err := s.dockerServiceManager.ContainerID(validatorContainerName)
@@ -187,11 +196,18 @@ func (s *sedgeActions) ExportSlashingInterchangeData(options SlashingExportOptio
 			"--data-path=/data",
 			"--to=/data/slashing_protection.json",
 		}
+	case "nimbus":
+		cmd = []string{
+			"slashingdb",
+			"export",
+			"/data/slashing_protection.json",
+			"--validators-dir=/data",
+		}
 	default:
 		return fmt.Errorf("%w: %s", ErrUnsupportedValidatorClient, options.ValidatorClient)
 	}
 	log.Infof("Exporting slashing data from client %s", options.ValidatorClient)
-	if err := runSlashingContainer(s.dockerClient, s.dockerServiceManager, cmd, validatorContainerName, slashingContainerName); err != nil {
+	if err := runSlashingContainer(s.dockerClient, s.dockerServiceManager, cmd, validatorContainerName, consensusContainerName, slashingContainerName, options.ValidatorClient == "nimbus"); err != nil {
 		return err
 	}
 	copyFrom := filepath.Join(options.GenerationPath, configs.ValidatorDir, "slashing_protection.json")
@@ -212,16 +228,25 @@ func (s *sedgeActions) ExportSlashingInterchangeData(options SlashingExportOptio
 }
 
 func runSlashingContainer(dockerClient client.APIClient, dockerServiceManager DockerServiceManager, cmd []string,
-	validatorContainerName string, slashingContainerName string,
+	validatorContainerName string, consensusContainerName string, slashingContainerName string, isNimbus bool,
 ) error {
-	validatorImage, err := dockerServiceManager.Image(validatorContainerName)
-	if err != nil {
-		return err
+	slashingImage := ""
+	var err error
+	if isNimbus {
+		slashingImage, err = dockerServiceManager.Image(consensusContainerName)
+		if err != nil {
+			return err
+		}
+	} else {
+		slashingImage, err = dockerServiceManager.Image(validatorContainerName)
+		if err != nil {
+			return err
+		}
 	}
 	log.Debugf("Creating %s container", services.ServiceCtSlashingData)
 	ct, err := dockerClient.ContainerCreate(context.Background(),
 		&container.Config{
-			Image: validatorImage,
+			Image: slashingImage,
 			Cmd:   cmd,
 		},
 		&container.HostConfig{

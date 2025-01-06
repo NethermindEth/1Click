@@ -28,6 +28,7 @@ import (
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
 
+	"github.com/NethermindEth/sedge/internal/compose"
 	"github.com/NethermindEth/sedge/internal/pkg/commands"
 	"github.com/NethermindEth/sedge/internal/pkg/dependencies"
 	"github.com/NethermindEth/sedge/test"
@@ -115,7 +116,7 @@ func TestLogs(t *testing.T) {
 					return "", nil
 				},
 			},
-			err: "failed to get logs for services . Error: error",
+			err: "failed to get logs for services . Error: Docker Compose Manager running 'docker compose logs': error. Output: ",
 		},
 		{
 			name: "services arg",
@@ -145,13 +146,14 @@ func TestLogs(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
+			composeMgr := compose.NewComposeManager(tc.cmd)
 
 			depsMgr := sedge_mocks.NewMockDependenciesManager(ctrl)
 			sedgeActions := sedge_mocks.NewMockSedgeActions(ctrl)
 
 			tc.setup(depsMgr, sedgeActions)
 
-			cmd := LogsCmd(tc.cmd, sedgeActions, depsMgr)
+			cmd := LogsCmd(*composeMgr, tc.cmd, sedgeActions, depsMgr)
 			cmd.SetOutput(io.Discard)
 			cmd.SetArgs(tc.args)
 			err := cmd.Execute()

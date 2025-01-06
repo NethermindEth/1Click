@@ -32,77 +32,6 @@
       },
       "id": 1,
       "panels": [],
-      "title": "Node Operator Information",
-      "type": "row"
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "${DS_PROMETHEUS}"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "thresholds"
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              }
-            ]
-          }
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 12,
-        "x": 0,
-        "y": 1
-      },
-      "id": 2,
-      "options": {
-        "colorMode": "value",
-        "graphMode": "area",
-        "justifyMode": "auto",
-        "orientation": "auto",
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "values": false
-        },
-        "textMode": "auto"
-      },
-      "pluginVersion": "9.4.3",
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "${DS_PROMETHEUS}"
-          },
-          "expr": "csm_node_operator_id",
-          "refId": "A"
-        }
-      ],
-      "title": "Node Operator ID",
-      "type": "stat"
-    },
-    {
-      "collapsed": false,
-      "gridPos": {
-        "h": 1,
-        "w": 24,
-        "x": 0,
-        "y": 9
-      },
-      "id": 3,
-      "panels": [],
       "title": "Keys and Bonds Information",
       "type": "row"
     },
@@ -165,7 +94,7 @@
         "x": 0,
         "y": 10
       },
-      "id": 4,
+      "id": 2,
       "options": {
         "legend": {
           "calcs": [],
@@ -184,7 +113,7 @@
             "type": "prometheus",
             "uid": "${DS_PROMETHEUS}"
           },
-          "expr": "csm_keys_stuck_validators_count",
+          "expr": "csm_keys_stuck_validators_count{node_operator_id=\"${NODE_ID}\",network=\"${NETWORK}\"}",
           "refId": "A",
           "legendFormat": "Stuck Validators"
         },
@@ -193,7 +122,7 @@
             "type": "prometheus",
             "uid": "${DS_PROMETHEUS}"
           },
-          "expr": "csm_keys_refunded_validators_count",
+          "expr": "csm_keys_refunded_validators_count{node_operator_id=\"${NODE_ID}\",network=\"${NETWORK}\"}",
           "refId": "B",
           "legendFormat": "Refunded Validators"
         },
@@ -202,7 +131,7 @@
             "type": "prometheus",
             "uid": "${DS_PROMETHEUS}"
           },
-          "expr": "csm_keys_exited_validators_count",
+          "expr": "csm_keys_exited_validators_count{node_operator_id=\"${NODE_ID}\",network=\"${NETWORK}\"}",
           "refId": "C",
           "legendFormat": "Exited Validators"
         },
@@ -211,7 +140,7 @@
             "type": "prometheus",
             "uid": "${DS_PROMETHEUS}"
           },
-          "expr": "csm_keys_deposited_validators_count",
+          "expr": "csm_keys_deposited_validators_count{node_operator_id=\"${NODE_ID}\",network=\"${NETWORK}\"}",
           "refId": "D",
           "legendFormat": "Deposited Validators"
         },
@@ -220,7 +149,7 @@
             "type": "prometheus",
             "uid": "${DS_PROMETHEUS}"
           },
-          "expr": "csm_keys_depositable_validators_count",
+          "expr": "csm_keys_depositable_validators_count{node_operator_id=\"${NODE_ID}\",network=\"${NETWORK}\"}",
           "refId": "E",
           "legendFormat": "Depositable Validators"
         }
@@ -288,7 +217,7 @@
         "x": 12,
         "y": 10
       },
-      "id": 5,
+      "id": 3,
       "options": {
         "legend": {
           "calcs": [],
@@ -307,7 +236,7 @@
             "type": "prometheus",
             "uid": "${DS_PROMETHEUS}"
           },
-          "expr": "csm_bond_current / 1e18",
+          "expr": "csm_bond_current{node_operator_id=\"${NODE_ID}\",network=\"${NETWORK}\"} / 1e18",
           "refId": "A",
           "legendFormat": "Current Bond"
         },
@@ -316,7 +245,7 @@
             "type": "prometheus",
             "uid": "${DS_PROMETHEUS}"
           },
-          "expr": "csm_bond_required / 1e18",
+          "expr": "csm_bond_required{node_operator_id=\"${NODE_ID}\",network=\"${NETWORK}\"} / 1e18",
           "refId": "B",
           "legendFormat": "Required Bond"
         },
@@ -325,7 +254,7 @@
             "type": "prometheus",
             "uid": "${DS_PROMETHEUS}"
           },
-          "expr": "csm_bond_excess / 1e18",
+          "expr": "csm_bond_excess{node_operator_id=\"${NODE_ID}\",network=\"${NETWORK}\"} / 1e18",
           "refId": "C",
           "legendFormat": "Excess Bond"
         },
@@ -334,7 +263,7 @@
             "type": "prometheus",
             "uid": "${DS_PROMETHEUS}"
           },
-          "expr": "csm_bond_missed / 1e18",
+          "expr": "csm_bond_missed{node_operator_id=\"${NODE_ID}\",network=\"${NETWORK}\"} / 1e18",
           "refId": "D",
           "legendFormat": "Missed Bond"
         }
@@ -350,7 +279,7 @@
         "x": 0,
         "y": 27
       },
-      "id": 6,
+      "id": 4,
       "panels": [],
       "title": "Rewards",
       "type": "row"
@@ -385,10 +314,10 @@
         "x": 0,
         "y": 28
       },
-      "id": 7,
+      "id": 5,
       "options": {
         "colorMode": "value",
-        "graphMode": "area",
+        "graphMode": "none",
         "justifyMode": "auto",
         "orientation": "auto",
         "reduceOptions": {
@@ -407,7 +336,7 @@
             "type": "prometheus",
             "uid": "${DS_PROMETHEUS}"
           },
-          "expr": "csm_non_claimed_rewards / 1e18",
+          "expr": "csm_non_claimed_rewards{node_operator_id=\"${NODE_ID}\",network=\"${NETWORK}\"} / 1e18",
           "refId": "A"
         }
       ],
@@ -422,7 +351,7 @@
         "x": 0,
         "y": 36
       },
-      "id": 8,
+      "id": 6,
       "panels": [],
       "title": "Penalties and Exit Requests",
       "type": "row"
@@ -490,7 +419,7 @@
         "x": 0,
         "y": 37
       },
-      "id": 9,
+      "id": 7,
       "options": {
         "legend": {
           "calcs": [],
@@ -509,12 +438,30 @@
             "type": "prometheus",
             "uid": "${DS_PROMETHEUS}"
           },
-          "expr": "csm_onchain_penalties_total",
+          "expr": "csm_onchain_penalties_total{node_operator_id=\"${NODE_ID}\", penalty_type=\"el_rewards_stealing\",network=\"${NETWORK}\"}",
           "refId": "A",
-          "legendFormat": "Penalties"
+          "legendFormat": "EL Rewards Stealing"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "expr": "csm_onchain_penalties_total{node_operator_id=\"${NODE_ID}\", penalty_type=\"initial_slashing\",network=\"${NETWORK}\"}",
+          "refId": "B",
+          "legendFormat": "Initial Slashing"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "expr": "csm_onchain_penalties_total{node_operator_id=\"${NODE_ID}\", penalty_type=\"withdrawal\",network=\"${NETWORK}\"}",
+          "refId": "C",
+          "legendFormat": "Withdrawal"
         }
       ],
-      "title": "Penalties",
+      "title": "Penalties by Type",
       "type": "timeseries"
     },
     {
@@ -580,7 +527,7 @@
         "x": 12,
         "y": 37
       },
-      "id": 10,
+      "id": 8,
       "options": {
         "legend": {
           "calcs": [],
@@ -599,7 +546,7 @@
             "type": "prometheus",
             "uid": "${DS_PROMETHEUS}"
           },
-          "expr": "csm_onchain_exit_requests_total",
+          "expr": "csm_onchain_exit_requests_total{node_operator_id=\"${NODE_ID}\",network=\"${NETWORK}\"}",
           "refId": "A",
           "legendFormat": "Exit Requests"
         }
@@ -632,6 +579,60 @@
         "regex": "",
         "skipUrlSync": false,
         "type": "datasource"
+      },
+      {
+        "current": {
+          "selected": false,
+          "text": "default",
+          "value": "default"
+        },
+        "datasource": {
+          "type": "prometheus",
+          "uid": "${DS_PROMETHEUS}"
+        },
+        "definition": "label_values(csm_node_operator_id, node_operator_id)",
+        "hide": 0,
+        "includeAll": false,
+        "label": "Node ID",
+        "multi": false,
+        "name": "NODE_ID",
+        "options": [],
+        "query": {
+          "query": "label_values(csm_node_operator_id, node_operator_id)",
+          "refId": "StandardVariableQuery"
+        },
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "type": "query"
+      },
+      {
+        "current": {
+          "selected": false,
+          "text": "default",
+          "value": "default"
+        },
+        "datasource": {
+          "type": "prometheus",
+          "uid": "${DS_PROMETHEUS}"
+        },
+        "definition": "label_values(csm_node_operator_id, network)",
+        "hide": 0,
+        "includeAll": false,
+        "label": "Network",
+        "multi": false,
+        "name": "NETWORK",
+        "options": [],
+        "query": {
+          "query": "label_values(csm_node_operator_id, network)",
+          "refId": "StandardVariableQuery"
+        },
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "type": "query"
       }
     ]
   },

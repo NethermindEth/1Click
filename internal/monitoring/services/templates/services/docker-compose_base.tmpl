@@ -1,7 +1,120 @@
 {{/* docker-compose_base.tmpl */}}
 {{ define "docker-compose" }}
 
+x-environment: &oncall-environment
+  DATABASE_TYPE: sqlite3
+  BROKER_TYPE: redis
+  BASE_URL: http://localhost:8090
+  SECRET_KEY: my_random_secret_must_be_more_than_32_characters_long
+  FEATURE_PROMETHEUS_EXPORTER_ENABLED: ${FEATURE_PROMETHEUS_EXPORTER_ENABLED:-false}
+  PROMETHEUS_EXPORTER_SECRET: ${PROMETHEUS_EXPORTER_SECRET:-}
+  REDIS_URI: redis://redis:6379/0
+  DJANGO_SETTINGS_MODULE: settings.hobby
+  CELERY_WORKER_QUEUE: "default,critical,long,slack,telegram,webhook,retry,celery,grafana"
+  CELERY_WORKER_CONCURRENCY: "1"
+  CELERY_WORKER_MAX_TASKS_PER_CHILD: "100"
+  CELERY_WORKER_SHUTDOWN_INTERVAL: "65m"
+  CELERY_WORKER_BEAT_ENABLED: "True"
+  GRAFANA_API_URL: http://grafana:3000
+
 services:
+
+  # Grafana OnCall Services
+  engine:
+    container_name: engine
+    image: grafana/oncall:v1.11.5
+    restart: always
+    ports:
+      - "8090:8080"
+    command: sh -c "uwsgi --ini uwsgi.ini"
+    environment: *oncall-environment
+    volumes:
+      - oncall_data:/var/lib/oncall
+    depends_on:
+      oncall_db_migration:
+        condition: service_completed_successfully
+      redis:
+        condition: service_healthy
+    networks:
+      - sedge
+
+  celery:
+    container_name: celery
+    image: grafana/oncall:v1.11.5
+    restart: always
+    command: sh -c "./celery_with_exporter.sh"
+    environment: *oncall-environment
+    volumes:
+      - oncall_data:/var/lib/oncall
+    depends_on:
+      oncall_db_migration:
+        condition: service_completed_successfully
+      redis:
+        condition: service_healthy
+    networks:
+      - sedge
+
+  oncall_db_migration:
+    container_name: oncall_db_migration
+    image: grafana/oncall:v1.11.5
+    command: python manage.py migrate --noinput
+    environment: *oncall-environment
+    volumes:
+      - oncall_data:/var/lib/oncall
+    depends_on:
+      redis:
+        condition: service_healthy
+    networks:
+      - sedge
+
+  redis:
+    container_name: redis
+    image: redis:7.0.5
+    restart: always
+    expose:
+      - 6379
+    volumes:
+      - redis_data:/data
+    deploy:
+      resources:
+        limits:
+          memory: 500m
+          cpus: "0.5"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      timeout: 5s
+      interval: 5s
+      retries: 10
+    networks:
+      - sedge
+
+  oncall_setup:
+    container_name: oncall_setup
+    image: curlimages/curl:8.10.0
+    depends_on:
+      grafana:
+        condition: service_started
+      engine:
+        condition: service_started
+    command: >
+      sh -c "
+      until curl -s http://grafana:3000/api/health | grep -q 'database.*ok'; do
+        echo 'Waiting for Grafana to be available...';
+        sleep 5;
+      done &&
+      until curl -s http://engine:8080/api/internal/v1/health/ | grep -q 'Ok'; do
+        echo 'Waiting for Engine to be available...';
+        sleep 5;
+      done &&
+      curl -X POST 'http://admin:admin@grafana:3000/api/plugins/grafana-oncall-app/settings' -H 'Content-Type: application/json' -d '{\"enabled\":true, \"jsonData\":{\"stackId\":5, \"orgId\":100, \"onCallApiUrl\":\"http://engine:8080\", \"grafanaUrl\":\"http://grafana:3000\"}}' &&
+      curl -X POST 'http://admin:admin@grafana:3000/api/plugins/grafana-oncall-app/resources/plugin/install'
+      "
+    restart: "no"
+    networks:
+      - sedge
+
+
+  # General Services
   grafana:
     container_name: sedge_grafana
     image: ${GRAFANA_IMAGE}
@@ -13,7 +126,12 @@ services:
       - ${GRAFANA_PROV}:/etc/grafana/provisioning
       - ${GRAFANA_DATA}:/etc/grafana/data
     environment:
+      - GF_SMTP_ENABLED=true
+      - GF_FEATURE_TOGGLES_ENABLE=externalServiceAccounts
       - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_ADMIN_PASSWORD}
+      - GF_INSTALL_PLUGINS=grafana-oncall-app
+      - GF_PLUGINS_ALLOW_LOADING_UNSIGNED_PLUGINS=grafana-oncall-app
+      - GF_INSTALL_PLUGINS=grafana-oncall-app
     networks:
       - sedge
 
@@ -25,10 +143,24 @@ services:
       - ${PROM_PORT}:9090
     volumes:
       - ${PROM_CONF}:/etc/prometheus/prometheus.yml
+      - ${PROM_RULES}:/etc/prometheus/rules
     command:
       - '--config.file=/etc/prometheus/prometheus.yml'
       - '--storage.tsdb.path=/prometheus'
       - '--web.enable-lifecycle'
+    networks:
+      - sedge
+
+  alertmanager:
+    container_name: sedge_alertmanager
+    image: ${ALERTMANAGER_IMAGE}
+    restart: unless-stopped
+    ports:
+      - ${ALERTMANAGER_PORT}:9093
+    volumes:
+      - ${ALERTMANAGER_CONF}:/etc/prometheus/alertmanager/alertmanager.yml
+    command:
+      - '--config.file=/etc/prometheus/alertmanager/alertmanager.yml'
     networks:
       - sedge
 
@@ -56,6 +188,8 @@ services:
 
 volumes:
   grafana-storage:
+  oncall_data:
+  redis_data:
 
 networks:
   sedge:

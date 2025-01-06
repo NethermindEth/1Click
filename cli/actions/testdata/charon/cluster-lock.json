@@ -1,0 +1,207 @@
+{
+ "cluster_definition": {
+  "name": "charon",
+  "creator": {
+   "address": "",
+   "config_signature": ""
+  },
+  "operators": [
+   {
+    "address": "",
+    "enr": "enr:-HW4QBh0mb_rT1jq4x3gJ9dE8aZWN53Sdu7f8CTv1jKBs60LFETyxbykCpdRsGXPjIpGjXo4m-uKQsud2ydARI1pw5SAgmlkgnY0iXNlY3AyNTZrMaEDTAapPhQbAJDzA671KvvapM1S977OZmYvzm6Y3imG-LE",
+    "config_signature": "",
+    "enr_signature": ""
+   },
+   {
+    "address": "",
+    "enr": "enr:-HW4QCusjxLUvMJ5avudca_7QOg0seqmLMxWUvNadCICc9YkWHdFIpggg2Yu5dg-WIjesuJlSUha9lzVj7dzqrSGeceAgmlkgnY0iXNlY3AyNTZrMaEC7TaC4CUd-01tawFPibioiT0iBeZnHunIFkF7sCPOWwU",
+    "config_signature": "",
+    "enr_signature": ""
+   },
+   {
+    "address": "",
+    "enr": "enr:-HW4QPiL6GTDEXIvXq3Qk1rbLvy204J0ilnXlV15ieS1g8dydDi8yJuj56pnzvox4d2Etdg_SNI7lMxKpbKxUV8jd92AgmlkgnY0iXNlY3AyNTZrMaEDj62I2poaSERPLDD3ajrPqvaWTUYQGXoUEyJ2MqTsfY0",
+    "config_signature": "",
+    "enr_signature": ""
+   },
+   {
+    "address": "",
+    "enr": "enr:-HW4QJLmPzoubFm2rScigHgKpbHpzJkfp0Cf1RXL6Qc47wvlQUXsson1qh_riFdmWeY472gKLLpXgIQgmAR3KGZzKMeAgmlkgnY0iXNlY3AyNTZrMaED-RCZFFpNlAAP6OdlEaBNekpSHnfoYlML_9iMGW7scXQ",
+    "config_signature": "",
+    "enr_signature": ""
+   }
+  ],
+  "uuid": "D3FB9672-FC7B-6769-FF67-920BB9A6CC1A",
+  "version": "v1.8.0",
+  "timestamp": "2024-07-29T19:43:43Z",
+  "num_validators": 5,
+  "threshold": 3,
+  "validators": [
+   {
+    "fee_recipient_address": "0x7cE7390C41Ce3416c4A0a297761C71763d89Ca3B",
+    "withdrawal_address": "0x7cE7390C41Ce3416c4A0a297761C71763d89Ca3B"
+   },
+   {
+    "fee_recipient_address": "0x7cE7390C41Ce3416c4A0a297761C71763d89Ca3B",
+    "withdrawal_address": "0x7cE7390C41Ce3416c4A0a297761C71763d89Ca3B"
+   },
+   {
+    "fee_recipient_address": "0x7cE7390C41Ce3416c4A0a297761C71763d89Ca3B",
+    "withdrawal_address": "0x7cE7390C41Ce3416c4A0a297761C71763d89Ca3B"
+   },
+   {
+    "fee_recipient_address": "0x7cE7390C41Ce3416c4A0a297761C71763d89Ca3B",
+    "withdrawal_address": "0x7cE7390C41Ce3416c4A0a297761C71763d89Ca3B"
+   },
+   {
+    "fee_recipient_address": "0x7cE7390C41Ce3416c4A0a297761C71763d89Ca3B",
+    "withdrawal_address": "0x7cE7390C41Ce3416c4A0a297761C71763d89Ca3B"
+   }
+  ],
+  "dkg_algorithm": "default",
+  "fork_version": "0x01017000",
+  "deposit_amounts": null,
+  "config_hash": "0xe23258c6a9932e05e7354a57511a8e7317ceb52507001922b8ffd35c457ad75b",
+  "definition_hash": "0x96b7158837410fbf179cbfadf0a681124c5aadb20c77d0d88a8ed314d3ab34f9"
+ },
+ "distributed_validators": [
+  {
+   "distributed_public_key": "0xa54440e320af34dfb3963175be103ec951f9b3f0d4aa82fd5eef0a42fdc216af8249297d213e23e91449d539d5726e95",
+   "public_shares": [
+    "0x937efb721750cc7a9f6285647282bb3eb6a015785be164f44b563951d65c54e7bb744c73dd2755327913f009f5948923",
+    "0xa4a08c0cf1238f3a5b2d0d0cf021475cd4fab8118459f6d429b4d47ac9066d76a5a1c800920a0e84842c6551a3d7f061",
+    "0x8893e76aee6142192e89d8d6ee03bbefc5e9cc92e3d24f4f27738bb5e9d11258ecd6323775890ee9afe04b29f888d0f9",
+    "0x91a6006f0af9b171c82026b7d5c7c7ae092320e6e93c12d4dd30e775a8226393cd3fa0a95310fa6d516457ac22b91336"
+   ],
+   "builder_registration": {
+    "message": {
+     "fee_recipient": "0x7ce7390c41ce3416c4a0a297761c71763d89ca3b",
+     "gas_limit": 30000000,
+     "timestamp": 1696000704,
+     "pubkey": "0xa54440e320af34dfb3963175be103ec951f9b3f0d4aa82fd5eef0a42fdc216af8249297d213e23e91449d539d5726e95"
+    },
+    "signature": "0xa1204a3b6d5e9a38b47fbe89b0b22efa5b2295a5fe16ac4c01717fd7550db0c622f77798fb275791cc1774ea8bbc962a156bdda0453353b4c5dc24456aaf88aa788c87106e4292607efc1e812cd36d0a5b47584ff5abeff754d5bcad261a57d3"
+   },
+   "partial_deposit_data": [
+    {
+     "pubkey": "0xa54440e320af34dfb3963175be103ec951f9b3f0d4aa82fd5eef0a42fdc216af8249297d213e23e91449d539d5726e95",
+     "withdrawal_credentials": "0x0100000000000000000000007ce7390c41ce3416c4a0a297761c71763d89ca3b",
+     "amount": "32000000000",
+     "signature": "0xa8154d7b3daece140f22ca5a66371bac2e0329a9dbb1deda24108cdb9d4b04e47f4696adc5889dae22be6145a28256fc0d587bf3a6a066edd4de109e51a8941b8b9f6ee61f84891bc26ee3693323b294781de14760674f023af21184b335b699"
+    }
+   ]
+  },
+  {
+   "distributed_public_key": "0xb817ffd0770913f31a0c2ca37bf8777b5838f3871fc804558c6cbebb29d610d5d2c64b5bcd361584a7e6ba30795ac6c4",
+   "public_shares": [
+    "0xb34d921aad847e8a868a3259633ebf797659ffb7debb7f681aae9d5169b34a720cbaaea2cd87b17d440bb34f452cb8d0",
+    "0x8c0e1c978fec684ee836f457185076c89c5a3d982174d4ecb3b485c41b1b73fa50f538866678c0de3b797318df4f5662",
+    "0xad34d5578eea61b47a24a7dc49194bb19f07e5cb6db604b352fe9a700cc2cb21d390efb65c4306877076cd12075fcff0",
+    "0x8d0d8c1ee7726500146f35dddef28756736f0b206701813c5378aabbc145967fd6b271a45721e1a0f437d7be53b93682"
+   ],
+   "builder_registration": {
+    "message": {
+     "fee_recipient": "0x7ce7390c41ce3416c4a0a297761c71763d89ca3b",
+     "gas_limit": 30000000,
+     "timestamp": 1696000704,
+     "pubkey": "0xb817ffd0770913f31a0c2ca37bf8777b5838f3871fc804558c6cbebb29d610d5d2c64b5bcd361584a7e6ba30795ac6c4"
+    },
+    "signature": "0xb3f89ed741d6ec9cae60a58f6b74ccd1239bfc66d98e90f049fa34e7eaa826208f33771bb7331211e74e605257a7612818feb0dd98f54a746eb0f9fdc057c93b1732f1a59a6d68899cefa767745cc5ebcf8f535b15270c197ceb8e7b7b58ad43"
+   },
+   "partial_deposit_data": [
+    {
+     "pubkey": "0xb817ffd0770913f31a0c2ca37bf8777b5838f3871fc804558c6cbebb29d610d5d2c64b5bcd361584a7e6ba30795ac6c4",
+     "withdrawal_credentials": "0x0100000000000000000000007ce7390c41ce3416c4a0a297761c71763d89ca3b",
+     "amount": "32000000000",
+     "signature": "0x996be98ac1ab42aa2594fb5345578c6ee01d9d11facb61c623119b6b2bf3ea88bd73fcc7a386c0c712d30493c7d2cc7a09471a360d8186a65ca072ad3419fe44bfa43b5a179c43e050839d1681556273001bec3ec6829e6dad87975cf36f31fe"
+    }
+   ]
+  },
+  {
+   "distributed_public_key": "0xa92a6349443cb28db93056ae73362791cccb854da50c6acf7ab23ab4b6a6ff8fe479ad85f2334b40d37b3fc2594ab2f5",
+   "public_shares": [
+    "0xb9d5ba740412ac60427986b1f906ebe27debfe9ca5d8631853160fbbf296b897c27f3142886ac69d5ce54d1e53abd45f",
+    "0x8c0c68f650806321f875504777dbc6a79bc3fb52023189a886c8178c7c44c7e98cafe8e5083b68eb375cb1267816a2f2",
+    "0x82d0f86cfe4bdabe3ea88f6340007f0e9d7e1be2a4380e42c5277b464b394849cd90f1b179f4c9f2d67701b9d0c2b790",
+    "0xae988804216084b85025415967bf4e85f250c0486a4374a99be0a543b4495fd05a3922f601e85aad164928f22fa0fb98"
+   ],
+   "builder_registration": {
+    "message": {
+     "fee_recipient": "0x7ce7390c41ce3416c4a0a297761c71763d89ca3b",
+     "gas_limit": 30000000,
+     "timestamp": 1696000704,
+     "pubkey": "0xa92a6349443cb28db93056ae73362791cccb854da50c6acf7ab23ab4b6a6ff8fe479ad85f2334b40d37b3fc2594ab2f5"
+    },
+    "signature": "0xb4a0e4a1cf7905b8abd07341be400295aa58aa606cd4fd77c7d8e77848f65a478243e7fe9d0424a0503330e7d61fd08c0b7992fbf6541e8171da95f4e40ba6088595048846a304fcf555069aa0999d9febed1f2b9a0542e3255a7cb6a992efb3"
+   },
+   "partial_deposit_data": [
+    {
+     "pubkey": "0xa92a6349443cb28db93056ae73362791cccb854da50c6acf7ab23ab4b6a6ff8fe479ad85f2334b40d37b3fc2594ab2f5",
+     "withdrawal_credentials": "0x0100000000000000000000007ce7390c41ce3416c4a0a297761c71763d89ca3b",
+     "amount": "32000000000",
+     "signature": "0xb631d3e0d2cfedff007ac5d5a7eb294de60d0e75405f5d612fdee9a3da5a83ee2ee40faeae44d775e96a99a0f3dbbc9f1023f2b41ef32a2201e2a6b46253849e3c224dbdec8d80ed89ffc7f1bd82154ef665604231c86312ec8319f95156a837"
+    }
+   ]
+  },
+  {
+   "distributed_public_key": "0x8305208fe7e85093f51c9b1703bde1bf86bacbabba2b13fb03578efa0e3f38bb9f921d1b6160ae1d90894ee897b829b7",
+   "public_shares": [
+    "0x9234b10e8d612de8dfb90e63ac2249046069f8e3d664699593903daf15c2cb3eb97ea07a3daaabffbe69c4ada631eba7",
+    "0x8a99369dd589ef13d43178e72838a0dc0f77da811f93980b9ff50450a4c417bcaf9c456221847d19c0e57f2997387fdc",
+    "0x99be39451c462522f6e363a60ebc6d3f06ff3ffaec1d321a39e25e56f118492027cfdb0a874931fe8097ff49fbb6056f",
+    "0x919e278fafe4097ece4829e4a76d4c85a72b599362b62180d51bfa0e8b34755f60678e8e6139ed4b3c5bef38a93a14e5"
+   ],
+   "builder_registration": {
+    "message": {
+     "fee_recipient": "0x7ce7390c41ce3416c4a0a297761c71763d89ca3b",
+     "gas_limit": 30000000,
+     "timestamp": 1696000704,
+     "pubkey": "0x8305208fe7e85093f51c9b1703bde1bf86bacbabba2b13fb03578efa0e3f38bb9f921d1b6160ae1d90894ee897b829b7"
+    },
+    "signature": "0x807006423c456a64eb91590f088f39e019c15519730db089daebf78952b9c31f362664b42b40da76a7a4b27106eaf38b09b0230468a935b5b3e6f3ea375a08e6c2f76e014e043c128d392df234cf06f81d4d87cc0f6de07792b0d96fbcd3a99e"
+   },
+   "partial_deposit_data": [
+    {
+     "pubkey": "0x8305208fe7e85093f51c9b1703bde1bf86bacbabba2b13fb03578efa0e3f38bb9f921d1b6160ae1d90894ee897b829b7",
+     "withdrawal_credentials": "0x0100000000000000000000007ce7390c41ce3416c4a0a297761c71763d89ca3b",
+     "amount": "32000000000",
+     "signature": "0x8e870a48e1e5c61b8650d17537ddd7dc01a017f76c97461fd1956de819ef21af318d9a5eee56cbbdee0b8f8e30ae74ab047d0220de1e7cbb25e159614bc64b76195d1193ed4aeacdd8dd70eb40d62c161e933c9fcef49544c406631fb2063eb2"
+    }
+   ]
+  },
+  {
+   "distributed_public_key": "0x9520c02ebab3efaec45d0fe7f8b08e532ffe2e03f59b417f5d33fdf721888d116674814c3ddb1972c5ec6588c2506986",
+   "public_shares": [
+    "0x8e173333b166ca47cad2dbbe6fcf95a37ab62b191b076e54d8a8f8374efad616761cae930893553eab7a1ff179b70e44",
+    "0x92887a45f4732242f2fd1d63dbcd3fcaf3b2b199de81570c38ddd5636ec877ddb2f286a0868b34183c0745068413282a",
+    "0x882ce8daf0e30218f4b521643be409abbd5b7fdb192e429df6b58d7c194c48f6187a29abf8801bb7a4b92b1485b6348b",
+    "0xb3a5be4f54eb7bde8204d963dfd3c8a0b97e00b227551f7fe4146d71718f11687e2515768d2d89e5ae816b0a287ae91f"
+   ],
+   "builder_registration": {
+    "message": {
+     "fee_recipient": "0x7ce7390c41ce3416c4a0a297761c71763d89ca3b",
+     "gas_limit": 30000000,
+     "timestamp": 1696000704,
+     "pubkey": "0x9520c02ebab3efaec45d0fe7f8b08e532ffe2e03f59b417f5d33fdf721888d116674814c3ddb1972c5ec6588c2506986"
+    },
+    "signature": "0x943464845fc610cc441c15fff6b6ecdaad53411d255619e9dceca156ef8a7be94fa2985fcc7e5199de3f1b607acc74970ef3b00fff70c036f5634fcb80963a952d767a155cd38ab7d071bfc3190425a1ed21c6fb256bc3080ecc88733bae6b05"
+   },
+   "partial_deposit_data": [
+    {
+     "pubkey": "0x9520c02ebab3efaec45d0fe7f8b08e532ffe2e03f59b417f5d33fdf721888d116674814c3ddb1972c5ec6588c2506986",
+     "withdrawal_credentials": "0x0100000000000000000000007ce7390c41ce3416c4a0a297761c71763d89ca3b",
+     "amount": "32000000000",
+     "signature": "0xa13a9419fd3a6efd1fed6fe2a9b09475d8bda5df141c2e7ca44aa659c21a042aea076a6e571b96e7efb2fc504ac7743301dbd6ad28df04339eea2dd6b16de5a8534df13e1d573e0695d3071de731737ef7afd9520ad14d213347032b483f1d68"
+    }
+   ]
+  }
+ ],
+ "signature_aggregate": "0x90a148183712f41bd68d2d4f7cbe70874d81543bcb0ae6908bf6b19d931f35ccec8f60498482a9c5926bb8b88382c99112551a5e80c868bdf0fe99fbed9f3b039b35b83c412315ee0ad2b6d31d7898d51c61dd63fd00ffa2dd9f613937e1a208",
+ "lock_hash": "0x3ff18c9196e4cbbb9790497100e501e1ae46b20106db4dc608b809fee0f8d19a",
+ "node_signatures": [
+  "0x283bdfea1c1f5154397e281a6641a61f0a5804d498c7ad40094d74b52f55538a55188b1056eea924d29b8c787e734552ea796d02f48cdfdfa23a0363b6f7e30000",
+  "0x871c6559739af1b8670b918bd5ab14b8cc18243e9bac85c75232f3c98e8dc379437aeaca501906d2904b4b85307c7ce41b2542f6b0bd37fff65528918735bd2f00",
+  "0xa4da37becc9ed38722dee85856084bfaf08bc4a7a58bf19d49edb316c4860a0e45d534445d1d513191c4324b97371585e0e58e9a388c7928cd9591671ca154ad00",
+  "0x24255721797165450160039f5575d0ec4b06f6e3ab7ebcff9c1e11bc4927429b2c1dc1d4ad05c4b31996681bd7197b50cb4f8ba4305749c39aa4137178ff9e9201"
+ ]
+}

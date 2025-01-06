@@ -91,6 +91,31 @@ func TestMonitoringCmd(t *testing.T) {
 			},
 			isErr: true,
 		},
+		{
+			name:  "valid monitoring init: lido, Mainnet",
+			flags: []string{"init", "lido", "--node-operator-id", "1", "--network", "mainnet"},
+			mocker: func(t *testing.T, ctrl *gomock.Controller) *sedge_mocks.MockMonitoringManager {
+				mockManager := sedge_mocks.NewMockMonitoringManager(ctrl)
+				gomock.InOrder(
+					mockManager.EXPECT().InstallationStatus().Return(common.NotInstalled, nil).AnyTimes(),
+					mockManager.EXPECT().InstallStack().Return(nil).AnyTimes(),
+					mockManager.EXPECT().Status().Return(common.Created, nil).AnyTimes(),
+					mockManager.EXPECT().Run().Return(nil).AnyTimes(),
+					mockManager.EXPECT().Init().Return(nil).AnyTimes(),
+					mockManager.EXPECT().AddService(gomock.Any()).Return(nil).AnyTimes(),
+				)
+				return mockManager
+			},
+			isErr: false,
+		},
+		{
+			name:  "invalid monitoring init: lido, no nodeID or reward address, Mainnet",
+			flags: []string{"init", "lido", "--network", "mainnet"},
+			mocker: func(t *testing.T, ctrl *gomock.Controller) *sedge_mocks.MockMonitoringManager {
+				return sedge_mocks.NewMockMonitoringManager(ctrl)
+			},
+			isErr: true,
+		},
 	}
 
 	for _, tc := range tcs {

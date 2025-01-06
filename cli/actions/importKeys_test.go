@@ -77,8 +77,7 @@ func TestImportKeys_ValidatorRunning(t *testing.T) {
 			t.Run(validatorClient, func(t *testing.T) {
 				ctrl := gomock.NewController(t)
 				defer ctrl.Finish()
-
-				dockerClient := importKeysGoldenPath(t, ctrl, false)
+				dockerClient := importKeysGoldenPath(t, ctrl, false, false)
 				dockerServiceManager := services.NewDockerServiceManager(dockerClient)
 				cmdRunner := test.SimpleCMDRunner{}
 				s := actions.NewSedgeActions(actions.SedgeActionsOptions{
@@ -112,8 +111,7 @@ func TestImportKeysCustom_ValidatorRunning(t *testing.T) {
 		t.Run(validatorClient, func(t *testing.T) {
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
-
-			dockerClient := importKeysGoldenPath(t, ctrl, true)
+			dockerClient := importKeysGoldenPath(t, ctrl, true, false)
 			dockerServiceManager := services.NewDockerServiceManager(dockerClient)
 			cmdRunner := test.SimpleCMDRunner{}
 			s := actions.NewSedgeActions(actions.SedgeActionsOptions{
@@ -196,8 +194,7 @@ func TestImportKeys_CustomOptions(t *testing.T) {
 		t.Run(fmt.Sprintf("%s_%s", tt.client, tt.network), func(t *testing.T) {
 			ctrl := gomock.NewController(t)
 			defer ctrl.Finish()
-
-			dockerClient := importKeysGoldenPath(t, ctrl, tt.customImage)
+			dockerClient := importKeysGoldenPath(t, ctrl, tt.customImage, false)
 			dockerServiceManager := services.NewDockerServiceManager(dockerClient)
 			cmdRunner := test.SimpleCMDRunner{}
 			s := actions.NewSedgeActions(actions.SedgeActionsOptions{
@@ -280,6 +277,37 @@ func TestImportKeys_UnexpectedExitCode(t *testing.T) {
 	assert.ErrorIs(t, err, actions.ErrValidatorImportCtBadExitCode)
 }
 
+func TestImportKeys_DistributedMode(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	dockerClient := importKeysGoldenPath(t, ctrl, false, true)
+	serviceManager := services.NewDockerServiceManager(dockerClient)
+	cmdRunner := test.SimpleCMDRunner{}
+	s := actions.NewSedgeActions(actions.SedgeActionsOptions{
+		DockerClient:         dockerClient,
+		DockerServiceManager: serviceManager,
+		CommandRunner:        &cmdRunner,
+	})
+
+	from, err := setupCharonKeystoreDir(t)
+	if err != nil {
+		t.Logf("Error setting up keystore dir: %v", err)
+		t.Fatal(err)
+	}
+
+	generationPath := t.TempDir()
+
+	err = s.ImportValidatorKeys(actions.ImportValidatorKeysOptions{
+		ValidatorClient: "lodestar",
+		Network:         "holesky",
+		GenerationPath:  generationPath,
+		Distributed:     true,
+		From:            from,
+	})
+	assert.NoError(t, err)
+}
+
 //go:embed testdata/keystore
 var keystoreTestData embed.FS
 
@@ -316,9 +344,45 @@ func setupKeystoreDir(t *testing.T) (string, error) {
 	return tempKeystore, nil
 }
 
+//go:embed testdata/charon
+var charonKeystoreTestData embed.FS
+
+func setupCharonKeystoreDir(t *testing.T) (string, error) {
+	t.Helper()
+	tempKeystore := t.TempDir()
+
+	baseTestDir := "testdata/charon"
+	dirs := []string{""}
+	for len(dirs) > 0 {
+		currentDir := dirs[0]
+		dirEntries, err := charonKeystoreTestData.ReadDir(path.Join(baseTestDir, currentDir))
+		if err != nil {
+			return "", err
+		}
+		for _, entry := range dirEntries {
+			if entry.IsDir() {
+				dirs = append(dirs, filepath.Join(currentDir, entry.Name()))
+			} else {
+				entryData, err := charonKeystoreTestData.ReadFile(path.Join(baseTestDir, currentDir, entry.Name()))
+				if err != nil {
+					return "", err
+				}
+				if err := os.MkdirAll(filepath.Join(tempKeystore, currentDir), 0o755); err != nil {
+					return "", err
+				}
+				if err := ioutil.WriteFile(filepath.Join(tempKeystore, currentDir, entry.Name()), entryData, 0o755); err != nil {
+					return "", err
+				}
+			}
+		}
+		dirs = dirs[1:]
+	}
+	return tempKeystore, nil
+}
+
 // importKeysGoldenPath returns a mocked docker client interface with all the
 // required responses for a correct validator import keys container execution.
-func importKeysGoldenPath(t *testing.T, ctrl *gomock.Controller, withCustomImage bool) client.APIClient {
+func importKeysGoldenPath(t *testing.T, ctrl *gomock.Controller, withCustomImage bool, withDistributedOption bool) client.APIClient {
 	t.Helper()
 	dockerClient := sedge_mocks.NewMockAPIClient(ctrl)
 
@@ -350,6 +414,8 @@ func importKeysGoldenPath(t *testing.T, ctrl *gomock.Controller, withCustomImage
 		}, nil)
 	if withCustomImage {
 		inspectCall.Times(2)
+	} else if withDistributedOption {
+		inspectCall.MinTimes(2)
 	} else {
 		inspectCall.Times(3)
 	}

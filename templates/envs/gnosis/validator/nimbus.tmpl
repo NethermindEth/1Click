@@ -1,0 +1,12 @@
+{{/* nimbus.tmpl */}}
+{{ define "validator" }}
+# --- Consensus Layer - Validator Node - configuration ---
+CC_API_URL={{.ConsensusApiURL}}
+CC_ADD_API_URL={{.ConsensusAdditionalApiURL}}
+GRAFFITI={{.Graffiti}}
+VL_LOG_LEVEL=info
+VL_IMAGE_VERSION={{.VlImage}}
+KEYSTORE_DIR={{.KeystoreDir}}
+WALLET_DIR=./wallet
+VL_DATA_DIR={{.VlDataDir}}
+{{ end }}
