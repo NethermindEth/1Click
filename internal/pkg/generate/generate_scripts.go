@@ -697,10 +697,17 @@ func joinIfNotEmpty(strs ...string) string {
 // imageOrEmpty returns the image of the client if it is not nil, otherwise returns an empty string
 func imageOrEmpty(cls *clients.Client, latest bool) string {
 	if cls != nil {
-		if latest {
-			splits := strings.Split(cls.Image, ":")
-			splits[len(splits)-1] = "latest"
-			return strings.Join(splits, ":")
+		if latest && !cls.Modified {
+			if cls.Name == "nimbus" {
+				splits := strings.Split(cls.Image, ":")
+				splits[len(splits)-1] = "multiarch-latest"
+				return strings.Join(splits, ":")
+
+			} else {
+				splits := strings.Split(cls.Image, ":")
+				splits[len(splits)-1] = "latest"
+				return strings.Join(splits, ":")
+			}
 		}
 		return cls.Image
 	}

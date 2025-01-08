@@ -260,11 +260,34 @@ func TestGenerateDockerCompose(t *testing.T) {
 							},
 						},
 						genTestData{
-							name: fmt.Sprintf("execution: %s, consensus: %s, validator: %s, network: %s, no validator, with latest", executionCl, consensusCl, consensusCl, network),
+							name: fmt.Sprintf("execution: %s, consensus: %s, validator: %s, network: %s, no validator, with latest, execution has image specified", executionCl, consensusCl, consensusCl, network),
 							genData: generate.GenData{
-								ExecutionClient: &clients.Client{Name: executionCl, Type: "execution"},
+								ExecutionClient: &clients.Client{Name: executionCl, Type: "execution", Image: "execution/execution:1.1.1", Modified: true},
 								ConsensusClient: &clients.Client{Name: consensusCl, Type: "consensus"},
 								Services:        []string{"execution", "consensus"},
+								Network:         network,
+								ContainerTag:    "sampleTag",
+								LatestVersion:   true,
+							},
+						},
+						genTestData{
+							name: fmt.Sprintf("execution: %s, consensus: %s, validator: %s, network: %s, no validator, with latest, consensus has image specified", executionCl, consensusCl, consensusCl, network),
+							genData: generate.GenData{
+								ExecutionClient: &clients.Client{Name: executionCl, Type: "execution"},
+								ConsensusClient: &clients.Client{Name: consensusCl, Type: "consensus", Image: "consensus/consensus:1.1.1", Modified: true},
+								Services:        []string{"execution", "consensus"},
+								Network:         network,
+								ContainerTag:    "sampleTag",
+								LatestVersion:   true,
+							},
+						},
+						genTestData{
+							name: fmt.Sprintf("execution: %s, consensus: %s, validator: %s, network: %s, no validator, with latest, consensus and validator has image specified", executionCl, consensusCl, consensusCl, network),
+							genData: generate.GenData{
+								ExecutionClient: &clients.Client{Name: executionCl, Type: "execution"},
+								ConsensusClient: &clients.Client{Name: consensusCl, Type: "consensus", Image: "consensus/consensus:1.1.1", Modified: true},
+								ValidatorClient: &clients.Client{Name: consensusCl, Type: "validator", Image: "validator/validator:1.1.1", Modified: true},
+								Services:        []string{"execution", "consensus", "validator"},
 								Network:         network,
 								ContainerTag:    "sampleTag",
 								LatestVersion:   true,
@@ -350,9 +373,13 @@ func TestGenerateDockerCompose(t *testing.T) {
 				named, err := reference.ParseNormalizedNamed(ecImageVersion)
 				assert.NoError(t, err, "invalid image", ecImageVersion)
 
-				// Test that the execution image is set to latest if flag --latest is provided
+				// Test that the execution image is set to latest if flag --latest is provided, and the image is not modified
 				if tc.genData.LatestVersion {
-					assert.True(t, strings.HasSuffix(named.String(), ":latest"))
+					if tc.genData.ExecutionClient.Modified {
+						assert.True(t, strings.HasSuffix(named.String(), tc.genData.ExecutionClient.Image))
+					} else {
+						assert.True(t, strings.HasSuffix(named.String(), ":latest"))
+					}
 				}
 
 				// Check that mev-boost service is not set when execution only
@@ -387,9 +414,15 @@ func TestGenerateDockerCompose(t *testing.T) {
 				named, err := reference.ParseNormalizedNamed(ccImageVersion)
 				assert.NoError(t, err, "invalid image", ccImageVersion)
 
-				// Test that the consensus image is set to latest if flag --latest is provided
+				// Test that the consensus image is set to latest if flag --latest is provided, and the image is not modified
 				if tc.genData.LatestVersion {
-					assert.True(t, strings.HasSuffix(named.String(), ":latest"))
+					if tc.genData.ConsensusClient.Modified {
+						assert.True(t, strings.HasSuffix(named.String(), tc.genData.ConsensusClient.Image))
+					} else if tc.genData.ConsensusClient.Name == "nimbus" {
+						assert.True(t, strings.HasSuffix(named.String(), ":multiarch-latest"))
+					} else {
+						assert.True(t, strings.HasSuffix(named.String(), ":latest"))
+					}
 				}
 				// Validate Execution API and AUTH URLs
 				apiEndpoint, authEndpoint := envData["EC_API_URL"], envData["EC_AUTH_URL"]
@@ -448,9 +481,15 @@ func TestGenerateDockerCompose(t *testing.T) {
 				named, err := reference.ParseNormalizedNamed(vlImageVersion)
 				assert.NoError(t, err, "invalid image", vlImageVersion)
 
-				// Test that the consensus image is set to latest if flag --latest is provided
+				// Test that the consensus image is set to latest if flag --latest is provided, and the image is not modified
 				if tc.genData.LatestVersion {
-					assert.True(t, strings.HasSuffix(named.String(), ":latest"))
+					if tc.genData.ValidatorClient.Modified {
+						assert.True(t, strings.HasSuffix(named.String(), tc.genData.ValidatorClient.Image))
+					} else if tc.genData.ValidatorClient.Name == "nimbus" {
+						assert.True(t, strings.HasSuffix(named.String(), ":multiarch-latest"))
+					} else {
+						assert.True(t, strings.HasSuffix(named.String(), ":latest"))
+					}
 				}
 
 				// Check Consensus API URL is set and is valid

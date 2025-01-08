@@ -24,6 +24,7 @@ type Client struct {
 	Name      string
 	Type      string
 	Image     string
+	Modified  bool
 	Endpoint  string
 	Supported bool
 }
