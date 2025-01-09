@@ -1,4 +1,4 @@
----
+\---
 sidebar_position: 15
 id: lido-status
 ---
@@ -9,6 +9,14 @@ Running `sedge lido-status` will display detailed data for a single Lido Node Op
 Including information on the node operator's status, queue details, bond and reward information, and any relevant alerts.
 
 ## Help
+
+:::note
+
+When using only the rewards address as input, the command will return the first node found to be associated with that address. 
+However, rewards addresses can be linked to multiple node operator (NO) entries in CSM (e.g., due to the "change rewards address" functionality). 
+If a rewards address is associated with multiple NOs, we recommend using the node operator ID flag (```-i```) to specify the appropriate node.
+
+:::
 
 ```
 $ sedge lido-status -h
