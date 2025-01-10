@@ -214,7 +214,13 @@ func buildLidoData(node *lidoData) map[string]struct {
 	var nodeOpDetailed, keysDetailed, queueDetailed, bondDetailed, rewardsDetailed string
 	var currentBond, requiredBond, excessBond, missedBond, rewards decimal.Decimal
 	rewardAddressLink := fmt.Sprintf(`https://etherscan.io/address/%s`, node.nodeInfo.RewardAddress)
-	claimRewardsLink := fmt.Sprintf(`https://%s.etherscan.io/address/%s#writeProxyContract#F10`, networkName, contracts.DeployedAddresses(contracts.CSModule)[networkName])
+	var prefix string
+	if networkName == "mainnet" {
+		prefix = ""
+	} else {
+		prefix = networkName + "."
+	}
+	claimRewardsLink := fmt.Sprintf(`https://%setherscan.io/address/%s#writeProxyContract#F10`, prefix, contracts.DeployedAddresses(contracts.CSModule)[networkName])
 
 	detailedDescriptions := map[string]string{
 		nodeOpInfo: `

@@ -58,15 +58,23 @@ holesky:
     Operator: "Beaverbuild"
     IsMandatory: false
     Description: "Beaverbuild Relay Holesky"
-  - Uri: "https://0xb1d229d9c21298a87846c7022ebeef277dfc321fe674fa45312e20b5b6c400bfde9383f801848d7837ed5fc449083a12@relay-holesky.edennetwork.io"
-    Operator: "Eden"
-    IsMandatory: true
-    Description: "Eden Relay Holesky - Filtering"
-  - Uri: "https://0xaa58208899c6105603b74396734a6263cc7d947f444f396a90f7b7d3e65d102aec7e5e5291b27e08d02c50a050825c2f@holesky.titanrelay.xyz/"
-    Operator: "Titan"
-    IsMandatory: true
-    Description: "Titan Relay Holesky - nonfiltering"
   - Uri: "https://0xafa4c6985aa049fb79dd37010438cfebeb0f2bd42b115b89dd678dab0670c1de38da0c4e9138c9290a398ecd9a0b3110@boost-relay-holesky.flashbots.net"
     Operator: "Flashbots"
     IsMandatory: true
     Description: "Flashbots Boost Holesky - filtering"
+  - Uri: "https://0xaa58208899c6105603b74396734a6263cc7d947f444f396a90f7b7d3e65d102aec7e5e5291b27e08d02c50a050825c2f@holesky.titanrelay.xyz/"
+    Operator: "Titan"
+    IsMandatory: true
+    Description: "Titan Relay Holesky - nonfiltering"
+  - Uri: "https://0xa55c1285d84ba83a5ad26420cd5ad3091e49c55a813eee651cd467db38a8c8e63192f47955e9376f6b42f6d190571cb5@relay-holesky.bolt.chainbound.io"
+    Operator: "Chainbound"
+    IsMandatory: false
+    Description: "Chainbound Preconf Holesky"
+  - Uri: "https://0x8d6ff9fdf3b8c05293f6c240f57034c6c5244d7ecb2b9a6e597de575b373610d6345f5060c150012d1cc42d38b8383ac@preconfs-holesky.aestus.live"
+    Operator: "Aestus"
+    IsMandatory: false
+    Description: "Aestus Preconf Holesky"
+  - Uri: "https://0xaa58208899c6105603b74396734a6263cc7d947f444f396a90f7b7d3e65d102aec7e5e5291b27e08d02c50a050825c2f@holesky-preconf.titanrelay.xyz"
+    Operator: "Titan"
+    IsMandatory: false
+    Description: "Titan Preconf Holesky"

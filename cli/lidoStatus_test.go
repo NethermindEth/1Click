@@ -137,25 +137,25 @@ func TestLidoStatusCmd(t *testing.T) {
 			},
 			isErr: true,
 		},
-		// {
-		// 	name: "Valid node ID, Mainnet",
-		// 	flags: flags{
-		// 		rewardAddress: "0xe6b5A31d8bb53D2C769864aC137fe25F4989f1fd", // rewardAddress should be ignored
-		// 		networkName: "mainnet",
-		// 		nodeIDInt:   1,
-		// 	},
-		// 	isErr: false,
-		// },
-		// {
-		// 	name: "Valid node ID with long description, Mainnet",
-		// 	flags: flags{
-		// 		rewardAddress: "0xe6b5A31d8bb53D2C769864aC137fe25F4989f1fd", // rewardAddress should be ignored
-		// 		networkName: "mainnet",
-		// 		nodeIDInt:   1,
-		// 		longDescriptions: true,
-		// 	},
-		// 	isErr: false,
-		// },
+		{
+			name: "Valid node ID, Mainnet",
+			flags: flags{
+				rewardAddress: "0xe6b5A31d8bb53D2C769864aC137fe25F4989f1fd", // rewardAddress should be ignored
+				networkName:   "mainnet",
+				nodeIDInt:     1,
+			},
+			isErr: false,
+		},
+		{
+			name: "Valid node ID with long description, Mainnet",
+			flags: flags{
+				rewardAddress:    "0xe6b5A31d8bb53D2C769864aC137fe25F4989f1fd", // rewardAddress should be ignored
+				networkName:      "mainnet",
+				nodeIDInt:        1,
+				longDescriptions: true,
+			},
+			isErr: false,
+		},
 		{
 			name: "Invalid: negative node ID, Mainnet",
 			flags: flags{
