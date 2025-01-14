@@ -334,7 +334,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Allow providing a number for `--tail` flag of `logs` command, e.g: `sedge logs --tail 50`
 - Remove `mainnet` service templates and use `merge` service templates for Mainnet network.
 - `checkpoint-sync-url` can now be set separately for every consensus client of a network using `CHECKPOINT_SYNC_URL` as
-  env variabe in the consensus client templates.
+  env variable in the consensus client templates.
 - Use fixed docker images with latest tested versions.
 - Change Prater to Goerli.
 
