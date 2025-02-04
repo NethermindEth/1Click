@@ -1,0 +1,13 @@
+{{/* grandine.tmpl */}}
+{{ define "consensus" }}
+# --- Consensus Layer - Beacon Node - configuration ---
+CC_PEER_COUNT=50
+CC_LOG_LEVEL=info
+EC_API_URL={{.ExecutionApiURL}}
+EC_AUTH_URL={{.ExecutionAuthURL}}
+CC_INSTANCE_NAME=Grandine
+CC_IMAGE_VERSION={{.CcImage}}
+CC_DATA_DIR={{.CcDataDir}}
+CC_JWT_SECRET_PATH={{.JWTSecretPath}}
+{{if .CheckpointSyncUrl}}CHECKPOINT_SYNC_URL={{.CheckpointSyncUrl}}{{end}}
+{{ end }} 

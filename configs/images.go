@@ -29,6 +29,7 @@ var ClientImages struct {
 		Lodestar   Image `yaml:"lodestar"`
 		Teku       Image `yaml:"teku"`
 		Prysm      Image `yaml:"prysm"`
+		Grandine   Image `yaml:"grandine"`
 		Nimbus     Image `yaml:"nimbus"`
 	}
 	Validator struct {

@@ -1,0 +1,46 @@
+{{/* grandine.tmpl */}}
+{{ define "consensus" }}
+  consensus:
+    stop_grace_period: 30s
+    container_name: sedge-consensus-client{{if .ContainerTag}}-{{.ContainerTag}}{{end}}
+    restart: unless-stopped
+    image: ${CC_IMAGE_VERSION}{{if .Mev}}
+    depends_on:{{if .Mev}}
+      mev-boost:
+        condition: service_started{{end}}{{end}}    
+    networks:
+      - sedge
+    volumes:
+      - ${CC_DATA_DIR}:/root/.grandine
+      - ${CC_JWT_SECRET_PATH}:/root/.grandine/jwtsecret{{if .CustomConsensusConfigs}}{{if .CustomNetworkConfigPath}}
+      - {{.CustomNetworkConfigPath}}:/network/config.yaml{{end}}{{if .CustomGenesisPath}}
+      - {{.CustomGenesisPath}}:/network/genesis.ssz{{end}}{{if .CustomDeployBlockPath}}
+      - {{.CustomDeployBlockPath}}:/network/deploy_block.txt{{end}}{{end}}
+    ports:
+      - "{{.ClDiscoveryPort}}:{{.ClDiscoveryPort}}/tcp"
+      - "{{.ClDiscoveryPort}}:{{.ClDiscoveryPort}}/udp"
+      - "{{.ClMetricsPort}}:{{.ClMetricsPort}}/tcp"{{if .MapAllPorts}}
+      - "{{.ClApiPort}}:{{.ClApiPort}}"{{end}}
+    expose:
+      - {{.ClApiPort}}
+    command:
+      - grandine{{if .CustomConsensusConfigs}}
+      - --config-file=/network/config.yaml{{end}}
+      - --datadir=/root/.grandine
+      - --eth1-rpc-urls=${EC_API_URL}
+      - --jwt-secret=/root/.grandine/jwtsecret
+      - --http-address=0.0.0.0
+      - --http-port={{.ClApiPort}}{{if not .CustomConsensusConfigs}}
+      - --network={{if eq .Network "gnosis" "chiado"}}gnosis{{else}}{{if .SplittedNetwork}}${CL_NETWORK}{{else}}${NETWORK}{{end}}{{end}}{{end}}
+      - --metrics
+      - --metrics-port={{.ClMetricsPort}}
+      - --metrics-address=0.0.0.0{{if or .ClCheckpointSyncUrl .CheckpointSyncUrl}}
+      - --checkpoint-sync-url={{if .CheckpointSyncUrl}}{{ .CheckpointSyncUrl }}{{else}}${CHECKPOINT_SYNC_URL}{{end}}{{end}}{{range $flag := .ClExtraFlags}}
+      - --{{$flag}}{{end}}{{if and .MevBoostEndpoint (ne .Network "gnosis") (ne .Network "chiado")}}
+      - --builder={{.MevBoostEndpoint}}{{end}}{{if .LoggingDriver}}
+    logging:
+      driver: "{{.LoggingDriver}}"{{if eq .LoggingDriver "json-file"}}
+      options:
+        max-size: "10m"
+        max-file: "10"{{end}}{{end}}
+{{ end }}

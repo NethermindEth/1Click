@@ -75,6 +75,11 @@ func validateValidator(gd *GenData, c *clients.ClientInfo) error {
 		return ErrUnableToGetClientsInfo
 	}
 	if !utils.Contains(validatorClients, gd.ValidatorClient.Name) {
+		// Only check for Grandine specifically if it's not in the supported list
+		// This provides a more helpful error message
+		if gd.ValidatorClient.Name == "grandine" {
+			return fmt.Errorf("grandine is a consensus-only client and currently not supported as a validator")
+		}
 		return ErrValidatorClientNotValid
 	}
 	return nil

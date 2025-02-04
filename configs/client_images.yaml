@@ -23,7 +23,10 @@ consensus:
     version: 24.10.3
   prysm:
     name: gcr.io/prysmaticlabs/prysm/beacon-chain
-    version: v5.1.2
+    version: v5.1.0
+  grandine:
+    name: sifrai/grandine
+    version: 0.4.1
   nimbus:
     name: statusim/nimbus-eth2
     version: multiarch-v24.10.0

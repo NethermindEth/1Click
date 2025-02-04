@@ -97,6 +97,13 @@ func TestSetImageOrDefault_Consensus(t *testing.T) {
 			},
 			expectedImage: *regexp.MustCompile(`^chainsafe/lodestar:v\d+\.\d+\.\d+$`),
 		},
+		{
+			client: Client{
+				Name: "grandine",
+				Type: "consensus",
+			},
+			expectedImage: *regexp.MustCompile(`^sifrai/grandine:\d+\.\d+\.\d+$`),
+		},
 	}
 	for _, test := range tests {
 		t.Run(test.client.Name, func(t *testing.T) {

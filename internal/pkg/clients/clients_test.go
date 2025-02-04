@@ -92,7 +92,7 @@ func TestClients(t *testing.T) {
 	inputs := [...]clientsTestCase{
 		{
 			map[string][]string{
-				"consensus": {"lighthouse", "prysm", "teku", "lodestar", "nimbus"},
+				"consensus": {"lighthouse", "prysm", "teku", "lodestar", "nimbus", "grandine"},
 				"validator": {"lighthouse", "prysm", "teku", "lodestar", "nimbus"},
 				"execution": {"nethermind", "geth", "besu", "erigon"},
 			},
@@ -132,7 +132,7 @@ func TestClients(t *testing.T) {
 		{
 			map[string][]string{
 				"validator": {"lighthouse", "teku", "lodestar", "nimbus"},
-				"consensus": {"lighthouse", "teku", "lodestar", "nimbus"},
+				"consensus": {"lighthouse", "teku", "lodestar", "nimbus", "grandine"},
 				"execution": {"nethermind", "erigon"},
 			},
 			[]string{"consensus", "execution", "validator"},
@@ -142,7 +142,7 @@ func TestClients(t *testing.T) {
 		{
 			map[string][]string{
 				"validator":            {"lighthouse", "prysm", "teku", "lodestar", "nimbus"},
-				"consensus":            {"lighthouse", "prysm", "teku", "lodestar", "nimbus"},
+				"consensus":            {"lighthouse", "prysm", "teku", "lodestar", "nimbus", "grandine"},
 				"execution":            {"nethermind", "geth", "besu", "erigon"},
 				"distributedValidator": {"charon"},
 			},
